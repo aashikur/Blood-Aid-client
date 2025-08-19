@@ -26,6 +26,7 @@ import RegistrationPage from "@/pages/_fronted/home/Register";
 import AllFundingAdmin from "@/pages/_dashboard/admin/funding/AllFundingAdmin";
 import PrivateRoute from "./PrivateRoute";
 import AddBlogs from "@/pages/_dashboard/shared/AddBlogs";
+import Test from "@/pages/_fronted/test/Test";
 
 const mainRoutes = createBrowserRouter([
   {
@@ -76,6 +77,10 @@ const mainRoutes = createBrowserRouter([
         path: '/funding',
         element:  <PrivateRoute><FundingPage></FundingPage></PrivateRoute>
       },
+            {
+        path: "test",
+        element: <Test />,
+      },
     ],
   },
   {
@@ -94,6 +99,7 @@ const mainRoutes = createBrowserRouter([
         path: "manage-donations",
         element: <ManageDonationsAdmin />,
       },
+
       {
         path: "manage-users",
         element: <ManageUsers />,
