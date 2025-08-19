@@ -41,10 +41,185 @@ It enables users to request and donate blood, manage their profiles, fund the or
 ---
 
 ## 🗂️ File Structure (Key Folders)
-src/ ├── assets/ # Images, logos, Lottie files ├── components/ │ ├── home/ # Home page sections │ ├── ui/ # Reusable UI (Button, Card, etc.) │ ├── shared/ # Navbar, Footer, Social, Banner │ └── funding/ # FundingForm, FundingTable, FundingStatCard ├── hooks/ # useAxiosSecure, useRole, useDistrictUpazila, etc. ├── layouts/ # RootLayout, DashboardLayout ├── pages/ │ ├── fronted/ # Home, Blog, Funding, Contact, Auth, etc. │ └── dashboard/ # admin/, volunteer/, donor/, shared/ ├── providers/ # AuthProvider.jsx ├── routers/ # mainRoutes.jsx, PrivateRoute.jsx ├── utils/ # bdLocationData.json, AllUser.txt └── ...
-
-text
-
+├── src
+│   ├── assets
+│   │   ├── react.svg
+│   │   ├── hfdjfd.png
+│   │   ├── animations
+│   │   │   ├── cooking.json
+│   │   │   ├── happy.json
+│   │   │   ├── loading.json
+│   │   │   ├── loginAnimation.json
+│   │   │   ├── sad.json
+│   │   │   └── lottie
+│   │   │       ├── Fallingheart.json
+│   │   │       ├── blood-pressure.json
+│   │   │       ├── blood-donor.json
+│   │   │       └── heart-beat.json
+│   │   └── images (if you keep necessary graphics only)
+│
+│   ├── Routers
+│   │   ├── PrivateRoute.jsx
+│   │   └── mainRoutes.jsx
+│
+│   ├── components
+│   │   ├── Banner.jsx
+│   │   ├── FoodCard.jsx
+│   │   ├── Footer.jsx
+│   │   ├── Header.jsx
+│   │   ├── Social.jsx
+│   │   ├── SponsorBloodAid.jsx
+│   │   ├── StripeWrapper.jsx
+│   │   ├── Title.jsx
+│   │   ├── funding
+│   │   │   ├── FundingForm.jsx
+│   │   │   ├── FundingStatCard.jsx
+│   │   │   └── FundingTable.jsx
+│   │   ├── home
+│   │   │   ├── BloodRequestCard.jsx
+│   │   │   ├── ContactUs.jsx
+│   │   │   ├── FAQAccordion.jsx
+│   │   │   ├── StatsCards.jsx
+│   │   │   └── TopNotice.jsx
+│   │   ├── loading
+│   │   │   ├── DashboardLoading.jsx
+│   │   │   └── SidebarLoading.jsx
+│   │   └── ui
+│   │       ├── Badge.jsx
+│   │       ├── Button.jsx
+│   │       ├── PhotoGallery.jsx
+│   │       ├── ScrollToTop.jsx
+│   │       ├── ShinyButton.jsx
+│   │       └── ToggleLightDark.jsx
+│
+│   ├── data
+│   │   ├── bd-districts.json
+│   │   └── bd-upazilas.json
+│
+│   ├── firebase
+│   │   └── firebase.config.js
+│
+│   ├── hooks
+│   │   ├── axiosPublic.js
+│   │   ├── useAxiosSecure.js
+│   │   ├── useCountUp.jsx
+│   │   ├── useDashboardStars.jsx
+│   │   ├── useDistrictUpazila.js
+│   │   └── useRole.jsx
+│
+│   ├── layouts
+│   │   ├── DashboardLayout.jsx
+│   │   └── RootLayout.jsx
+│
+│   ├── pages
+│   │   ├── _dashboard
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── DashboardSidebar.jsx
+│   │   │   ├── DonationRequestsPublic.jsx
+│   │   │   ├── DonorDashboard.jsx
+│   │   │   ├── ProfileDashboard.jsx
+│   │   │   ├── UserDetailsDashboard.jsx
+│   │   │   ├── VolunteerDashboard.jsx
+│   │   │   ├── admin
+│   │   │   │   ├── AdminDashboard.jsx
+│   │   │   │   ├── DashboardSidebarAdmin.jsx
+│   │   │   │   ├── blogs
+│   │   │   │   │   ├── AddBlogAdmin.jsx
+│   │   │   │   │   ├── EditBlogAdmin.jsx
+│   │   │   │   │   ├── ManageBlogs.jsx
+│   │   │   │   │   └── ViewBlogAdmin.jsx
+│   │   │   │   ├── funding
+│   │   │   │   │   ├── AllFundingAdmin.jsx
+│   │   │   │   │   └── ViewFundingAdmin.jsx
+│   │   │   │   ├── requests
+│   │   │   │   │   ├── AllRequestsAdmin.jsx
+│   │   │   │   │   ├── EditRequestAdmin.jsx
+│   │   │   │   │   ├── ManageDonationsAdmin.jsx
+│   │   │   │   │   └── ViewRequestAdmin.jsx
+│   │   │   │   └── users
+│   │   │   │       └── ManageUserAdmin.jsx
+│   │   │   ├── donor
+│   │   │   │   ├── DashboardSidebarDonor.jsx
+│   │   │   │   ├── HomeDonor.jsx
+│   │   │   │   └── requests
+│   │   │   │       ├── CreateDonationRequestDonor.jsx
+│   │   │   │       ├── EditRequestDonor.jsx
+│   │   │   │       └── ViewRequestDonor.jsx
+│   │   │   ├── shared
+│   │   │   │   ├── AddBlogs.jsx
+│   │   │   │   ├── contacts
+│   │   │   │   │   └── ViewContactsDashboard.jsx
+│   │   │   │   ├── funding
+│   │   │   │   │   ├── FundingForm.jsx
+│   │   │   │   │   ├── FundingStatCard.jsx
+│   │   │   │   │   ├── FundingTable.jsx
+│   │   │   │   │   └── MyFundingTable.jsx
+│   │   │   │   ├── requests
+│   │   │   │   │   ├── CreateDonationRequestDashboard.jsx
+│   │   │   │   │   ├── MyDonationRequestsDashboard.jsx
+│   │   │   │   │   ├── MyDonationRequestsDetails.jsx
+│   │   │   │   │   └── MyDonationRequestsDetailsEdit.jsx
+│   │   │   │   └── users
+│   │   │   │       ├── ManageUsers.jsx
+│   │   │   │       └── UserModal.jsx
+│   │   │   └── volunteer
+│   │   │       ├── DashboardSidebarVolunteer.jsx
+│   │   │       ├── HomeVolunteer.jsx
+│   │   │       ├── blogs
+│   │   │       │   ├── AddBlogVolunteer.jsx
+│   │   │       │   ├── EditBlogVolunteer.jsx
+│   │   │       │   └── ManageBlogsVolunteer.jsx
+│   │   │       ├── funding
+│   │   │       │   ├── AllFundingVolunteer.jsx
+│   │   │       │   └── ViewFundingVolunteer.jsx
+│   │   │       └── requests
+│   │   │           ├── AllRequestsVolunteer.jsx
+│   │   │           ├── EditRequestVolunteer.jsx
+│   │   │           └── ViewRequestVolunteer.jsx
+│   │   └── _fronted
+│   │       ├── about
+│   │       │   └── About.jsx
+│   │       ├── auth
+│   │       │   ├── Error.jsx
+│   │       │   ├── Login.jsx
+│   │       │   └── Register.jsx
+│   │       ├── blog
+│   │       │   ├── Blog.jsx
+│   │       │   ├── BlogCard.jsx
+│   │       │   ├── BlogCategoryFilter.jsx
+│   │       │   ├── BlogDetails.jsx
+│   │       │   └── BlogList.jsx
+│   │       ├── contact
+│   │       │   └── Contact.jsx
+│   │       ├── funding
+│   │       │   └── FundingPage.jsx
+│   │       ├── home
+│   │       │   ├── CTASection.jsx
+│   │       │   ├── ContactSection.jsx
+│   │       │   ├── DetailsPage.jsx
+│   │       │   ├── Error.jsx
+│   │       │   ├── FeaturesSection.jsx
+│   │       │   ├── HeroSection.jsx
+│   │       │   ├── Home.jsx
+│   │       │   ├── Loading.jsx
+│   │       │   ├── TestimonialsSection.jsx
+│   │       ├── search
+│   │       │   ├── Search.jsx
+│   │       │   └── Search4.jsx
+│   │       └── shared
+│   │           ├── Banner.jsx
+│   │           ├── Footer.jsx
+│   │           ├── Navbar.jsx
+│   │           └── Social.jsx
+│
+│   ├── providers
+│   │   └── AuthProvider.jsx
+│
+│   ├── utils
+│   │   └── bdLocationData.json
+│
+│   ├── index.css
+│   └── main.jsx
 
 ---
 
