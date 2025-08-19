@@ -7,7 +7,7 @@
 
 ---
 
-## 🌟 Project Overview
+## 🌟 Project Overview ...
 
 **BloodAid** is a modern, full-stack blood donation platform built with React, Tailwind CSS, Firebase Auth, Stripe, and a Node.js/Express/MongoDB backend.  
 It enables users to request and donate blood, manage their profiles, fund the organization, and access a rich dashboard experience based on their role (admin, volunteer, donor).
