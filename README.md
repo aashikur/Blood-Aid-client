@@ -41,6 +41,7 @@ It enables users to request and donate blood, manage their profiles, fund the or
 ---
 
 ## 🗂️ File Structure (Key Folders)
+<pre> ```bash
 ├── src
 │   ├── assets
 │   │   ├── react.svg
@@ -220,7 +221,7 @@ It enables users to request and donate blood, manage their profiles, fund the or
 │
 │   ├── index.css
 │   └── main.jsx
-
+```</pre> 
 ---
 
 ## 🔑 How to Use
