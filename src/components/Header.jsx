@@ -1,17 +1,24 @@
 import { Link, NavLink } from "react-router";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "@/providers/AuthProvider";
-import { FaTachometerAlt, FaSignOutAlt, FaUserCircle, FaRegListAlt, FaBlog, FaDonate, FaSignInAlt, FaUserPlus, FaUser, FaTimes } from "react-icons/fa";
+import { FaTachometerAlt, FaSignOutAlt, FaUserCircle, FaRegListAlt, FaBlog, FaDonate, FaSignInAlt, FaUserPlus, FaUser, FaTimes, FaSms } from "react-icons/fa";
 import { HiHome } from "react-icons/hi";
 import ToggleLightDark from "./ui/ToggleLightDark";
 import TopNotice from "./home/TopNotice";
 import { CiMenuFries } from "react-icons/ci";
 import Swal from "sweetalert2";
+import { FaDownLeftAndUpRightToCenter, FaPersonRifle } from "react-icons/fa6";
+import { BiBell, BiNotificationOff, BiParty } from "react-icons/bi";
+import { BsPersonFillExclamation } from "react-icons/bs";
 
 const navItems = [
   { name: "Home", path: "/", icon: <HiHome /> },
   { name: "Donation Requests", path: "/donation-requests", icon: <FaRegListAlt /> },
   { name: "Blog", path: "/blog", icon: <FaBlog /> },
+  { name: "Urgent", path: "/urgent", icon: <FaDownLeftAndUpRightToCenter /> },
+  { name: "Drive", path: "/drives", icon: <BiParty /> },
+  { name: "About", path: "/about", icon: <BiParty /> },
+  { name: "Hospitals", path: "/hospitals", icon: <BiParty /> },
 ];
 
 const Navbar = () => {
@@ -125,6 +132,27 @@ const Navbar = () => {
                   >
                     <FaTachometerAlt className="inline mr-2" />
                     Dashboard
+                  </Link>
+                  <Link
+                    to="/dashboard/profile"
+                    className="block px-4 py-2 text-[#18122B] dark:text-white hover:bg-[#FDEDF3] dark:hover:bg-[#18122B] transition"
+                  >
+                    <FaPersonRifle className="inline mr-2" />
+                    Profile
+                  </Link>
+                  <Link
+                    to="/dashboard"
+                    className="block px-4 py-2 text-[#18122B] dark:text-white hover:bg-[#FDEDF3] dark:hover:bg-[#18122B] transition"
+                  >
+                    <BiBell className="inline mr-2" />
+                    Notifications
+                  </Link>
+                  <Link
+                    to="/dashboard/contacts"
+                    className="block px-4 py-2 text-[#18122B] dark:text-white hover:bg-[#FDEDF3] dark:hover:bg-[#18122B] transition"
+                  >
+                    <FaSms className="inline mr-2" />
+                    Message
                   </Link>
                   <button
                     className="block w-full text-left px-4 py-2 text-red-500 hover:bg-[#FDEDF3] dark:hover:bg-[#18122B] transition"

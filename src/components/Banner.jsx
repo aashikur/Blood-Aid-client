@@ -8,6 +8,7 @@ import ShinyButton from "./ui/ShinyButton";
 import { useContext, useState } from "react";
 import { AuthContext } from "@/providers/AuthProvider";
 import Swal from "sweetalert2";
+import { BiPlus } from "react-icons/bi";
 
 const Banner = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const Banner = () => {
     });
 };
   return (
-    <div  className="bg-red-700 dark:bg-transparent">
+    <div  className="">
      <section className="w-full z-10  flex justify-center   bg-gradient-to-br sm:rounded-b-[100px] rounded-b-[50px] from-pink-200 via-white to-pink-200 sm:py-30 py-15
      dark:from-[#18122B] dark:via-[#393053] dark:to-[#18122B]
     bg-[#ffd8de]
@@ -65,7 +66,7 @@ const Banner = () => {
                 className="flex justify-center items-center gap-2 bg-gradient-to-tr from-red-800   to-red-400 text-white px-6 py-2 rounded-full font-semibold hover:bg-[#a80020] transition cursor-pointer"
                 onClick={() => navigate("/registration")}
               >
-                <FaUserPlus /> Join as Donor
+                <BiPlus /> Create Request
               </button>
               <button
                 className="flex justify-center items-center gap-2 border border-[#c30027] text-[#c30027] px-6 py-2 rounded-full hover:bg-[#FDEDF3] dark:bg-[#18122B] dark:text-white/70 dark:border-white dark:hover:bg-[#393053] transition cursor-pointer"

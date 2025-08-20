@@ -81,9 +81,14 @@ export default function DonationRequestsPublic() {
 
     return (
         <div className="p-4 max-w-6xl mx-auto">
-            <h2 className="text-2xl font-bold text-[#c30027] mb-6 text-center">
-                All Blood Requests : ({filteredRequests.length})
+           <div className="flex flex-col sm:flex-row gap-2  justify-between border border-gray-100 dark:border-gray-700 shadow px-4 py-3 items-center rounded-2xl my-4">
+             <h2 className="text-xl sm:text-2xl font-bold text-[#c30027]  text-center">
+               Total Requested : ({filteredRequests.length})
             </h2>
+            <button className="flex btn justify-center items-center gap-2 bg-gradient-to-tr from-red-800   to-red-400 text-white px-6 py-2 rounded-full font-semibold hover:bg-[#a80020] transition cursor-pointer"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z"></path></svg> Create Request</button>
+
+
+           </div>
             {/* Search & Filter */}
             <div className="flex flex-col md:flex-row gap-3 mb-4 items-center justify-between">
                 <input
@@ -93,8 +98,8 @@ export default function DonationRequestsPublic() {
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-full md:w-1/2 px-4 py-2 rounded-full border border-[#c30027]/30 bg-[#FDEDF3] dark:bg-[#393053] outline-none"
                 />
-                <div className="flex gap-2 items-center">
-                    <span className="font-semibold">Status:</span>
+                <div className="flex gap-2 items-center flex-wrap justify-center">
+                    <span className="font-semibold ">Status:</span>
                     {["all", "pending", "inprogress", "done", "canceled"].map((status) => (
                         <button
                             key={status}

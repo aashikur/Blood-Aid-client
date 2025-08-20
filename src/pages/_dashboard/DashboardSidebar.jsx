@@ -24,6 +24,8 @@ const adminPowerLinks = [
   { to: "/dashboard/content-management", icon: <FaBlog />, label: "Content Management" },
   { to: "/dashboard/funding", icon: <FaDonate />, label: "All Funding" },
   { to: "/dashboard/contacts", icon: <FaEnvelope />, label: "All Contacts" },
+  { to: "/dashboard/contacts", icon: <FaEnvelope />, label: "Hospitals" },
+  { to: "/dashboard/contacts", icon: <FaEnvelope />, label: "Drives" },
 
 ];
 
@@ -34,6 +36,10 @@ const volunteerPowerLinks = [
   { to: "/dashboard/contacts", icon: <FaEnvelope />, label: "Contact Messages" },
   { to: "/dashboard/manage-donations", icon: <FaRegListAlt />, label: "Manage Donations" },
   { to: "/dashboard/content-management", icon: <FaBlog />, label: "Manage Blogs" },
+  
+  { to: "/dashboard/contacts", icon: <FaEnvelope />, label: "Hospitals" },
+  { to: "/dashboard/contacts", icon: <FaEnvelope />, label: "Drives" },
+
 
 ];
 

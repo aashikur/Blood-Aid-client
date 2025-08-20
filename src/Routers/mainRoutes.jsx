@@ -17,7 +17,7 @@ import MyDonationRequestsDetailsEdit from "@/pages/_dashboard/shared/requests/My
 import DonationRequestsPublic from "@/pages/_dashboard/DonationRequestsPublic";
 
 import ManageBlogs from "@/pages/_dashboard/admin/blogs/ManageBlogs";
-import Blog from "@/pages/_fronted/home/Blog";
+import Blog from "@/pages/_fronted/blog/Blog";
 import Search from "@/pages/_fronted/search/Search";
 import FundingPage from "@/pages/_fronted/funding/FundingPage";
 import ViewContactsDashboard from "@/pages/_dashboard/shared/contacts/ViewContactsDashboard";
@@ -27,6 +27,10 @@ import AllFundingAdmin from "@/pages/_dashboard/admin/funding/AllFundingAdmin";
 import PrivateRoute from "./PrivateRoute";
 import AddBlogs from "@/pages/_dashboard/shared/AddBlogs";
 import Test from "@/pages/_fronted/test/Test";
+import Urgent from "@/pages/_fronted/urgent/Urgent";
+import Drives from "@/pages/_fronted/drives/Drives";
+import Hospitals from "@/pages/_fronted/hospitals/Hospitals";
+import About from "@/pages/_fronted/about/About";
 
 const mainRoutes = createBrowserRouter([
   {
@@ -47,7 +51,7 @@ const mainRoutes = createBrowserRouter([
       //   element: <DetailsPage />,
       //   loader: async ({ params }) => {
       //     const { data } = await axios.get(
-      //       `https://blood-lagbe-server.vercel.app/details/${params.bookId}`
+      //       `http://localhost:5000//details/${params.bookId}`
       //     );
       //     return data;
       //   },
@@ -57,16 +61,35 @@ const mainRoutes = createBrowserRouter([
         element: <Login></Login>,
       },
       {
+        path: "hospitals",
+        element: <Hospitals></Hospitals>,
+      },
+      {
+        path: "about",
+        element: <About></About>,
+      },
+      {
         path: "registration",
         element: <RegistrationPage></RegistrationPage>,
       },
       {
         path: "blog",
         element: <Blog />,
+      },{
+        path: "donor",
+        element: <Search />,
       },
       {
         path: "search",
         element: <Search />,
+      },
+      {
+        path: "drives",
+        element: <Drives />,
+      },
+      {
+        path: "urgent",
+        element: <Urgent />,
       },
       {
         path: '/sponsor',

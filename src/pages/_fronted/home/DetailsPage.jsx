@@ -13,7 +13,7 @@ export default function DetailsPage() {
   const handleRequest = () => {
     axios
       .patch(
-        `https://blood-lagbe-server.vercel.app/request/${book._id}`,
+        `http://localhost:5000//request/${book._id}`,
         { donationAmount },
         {
           headers: {

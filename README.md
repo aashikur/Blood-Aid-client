@@ -3,7 +3,7 @@
 ## 🚀 Live Site
 
 - **Frontend:** [https://blood-aid-now.web.app/](https://blood-aid-now.web.app/)
-- **API:** [https://blood-lagbe-server.vercel.app/](https://blood-lagbe-server.vercel.app/)
+- **API:** [http://localhost:5000//](http://localhost:5000//)
 
 ---
 
@@ -300,6 +300,6 @@ Example:
 This README contains all the context, structure, and feature details needed for any AI model or developer to continue, extend, or debug the project without further explanation.
 
 Live Site: https://blood-aid-now.web.app/
-API: https://blood-lagbe-server.vercel.app/
+API: http://localhost:5000//
 
 
