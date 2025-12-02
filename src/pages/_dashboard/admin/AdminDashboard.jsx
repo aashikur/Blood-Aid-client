@@ -1,15 +1,16 @@
 import { useEffect, useState, useContext } from "react";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
-import { FaUser, FaTint, FaDonate, FaRegListAlt } from "react-icons/fa";
+import { FaUser, FaTint, FaDonate, FaRegListAlt, FaArrowRight } from "react-icons/fa";
 import { AuthContext } from "@/providers/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import useDashboardStars from "@/hooks/useDashboardStars";
+
 const statusColors = {
-  pending: "bg-yellow-100 text-yellow-700",
-  inprogress: "bg-blue-100 text-blue-700",
-  done: "bg-green-100 text-green-700",
-  canceled: "bg-red-100 text-red-700",
+  pending: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
+  inprogress: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+  done: "bg-green-500/10 text-green-500 border-green-500/20",
+  canceled: "bg-red-500/10 text-red-500 border-red-500/20",
 };
 
 const AdminDashboard = () => {
@@ -20,150 +21,194 @@ const AdminDashboard = () => {
     totalFunding: 0,
   });
 
-  const { totalFundingAmount } = useDashboardStars()
-  console.log(totalFundingAmount)
+  const { totalFundingAmount } = useDashboardStars();
   const axiosSecure = useAxiosSecure();
+  
   useEffect(() => {
     axiosSecure("/admin-dashboard-stats").then(({ data }) => setStats(data));
-    // Example: fetch latest requests
-    // axiosSecure("/latest-requests?limit=5").then(({ data }) => setLatestRequests(data));
   }, []);
 
   const { user } = useContext(AuthContext);
-
 
   const { data: requests = [], isLoading } = useQuery({
     queryKey: ["my-donation-requests-home", user.email],
     queryFn: async () => {
       const { data } = await axiosSecure.get(`/my-donation-requests?email=${user.email}&limit=3`);
-      console.log("Hello Man: ", requests)
       return data;
     },
   });
-  // console.log(requests)
-  // Example stat cards config
+
   const statCards = [
     {
       title: "Total Users",
       value: stats.totalUsers,
-      icon: <FaUser className="text-3xl text-white" />,
-      gradient: "from-[#c30027] to-pink-400",
-      sub: "All registered users",
+      icon: <FaUser className="text-2xl" />,
+      gradient: "from-blue-500 to-purple-600",
+      sub: "Registered members",
     },
     {
       title: "Total Requests",
       value: stats.totalRequest,
-      icon: <FaRegListAlt className="text-3xl text-white" />,
-      gradient: "from-pink-400 to-[#c30027]",
-      sub: "All blood requests",
+      icon: <FaRegListAlt className="text-2xl" />,
+      gradient: "from-pink-500 to-rose-600",
+      sub: "Blood donation needs",
     },
     {
       title: "Total Funding",
       value: totalFundingAmount ? `৳${totalFundingAmount}` : "৳0",
-      icon: <FaDonate className="text-3xl text-white" />,
-      gradient: "from-[#c30027] to-[#43e97b]",
-      sub: "Total funds raised",
+      icon: <FaDonate className="text-2xl" />,
+      gradient: "from-emerald-400 to-teal-600",
+      sub: "Funds raised",
     },
   ];
 
   return (
-    <div className="p-4 md:p-8 bg-[#FDEDF3] dark:bg-[#18122B] min-h-screen">
-      {/* Welcome */}
-      <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
-        <div className="flex items-center gap-4">
-          <img
-            src={user?.photoURL || "/logo/icon-2.png"}
-            alt="Admin"
-            className="w-14 h-14 rounded-full border-2 border-[#c30027]"
-          />
-          <div>
-            <h2 className="text-2xl font-bold text-[#c30027]">Welcome, {user?.displayName || "Admin"} 👋</h2>
-            <p className="text-gray-500 dark:text-gray-300">Here’s your BloodAid dashboard overview</p>
+    <div className="min-h-screen bg-[#0B0B15] text-white p-6 space-y-8">
+      {/* Welcome Section */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-900/40 to-blue-900/40 border border-white/10 p-8 backdrop-blur-xl">
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl"></div>
+        
+        <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-tr from-pink-500 to-purple-600 rounded-full blur opacity-70"></div>
+            <img
+              src={user?.photoURL || "/logo/icon-2.png"}
+              alt="Admin"
+              className="relative w-20 h-20 rounded-full border-2 border-white/20 object-cover"
+            />
+          </div>
+          <div className="text-center md:text-left">
+            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+              Welcome back, {user?.displayName?.split(' ')[0] || "Admin"}!
+            </h1>
+            <p className="text-gray-400 mt-2 max-w-xl">
+              Here's what's happening with BloodAid today. You have full control over the platform statistics and user management.
+            </p>
           </div>
         </div>
-        {/* (Optional) Add a search or quick action bar here */}
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {statCards.map((stat) => (
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {statCards.map((stat, idx) => (
           <div
-            key={stat.title}
-            className={`rounded-2xl p-6 flex flex-col gap-2 shadow-lg bg-gradient-to-tr ${stat.gradient} relative overflow-hidden`}
+            key={idx}
+            className="group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 p-6 hover:bg-white/10 transition-all duration-300"
           >
-            <div className="absolute right-4 top-4 opacity-30">{stat.icon}</div>
-            <div className="text-white text-lg font-semibold">{stat.title}</div>
-            <div className="text-3xl font-extrabold text-white">{stat.value}</div>
-            <div className="text-white text-sm opacity-80">{stat.sub}</div>
+            <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${stat.gradient} opacity-10 rounded-bl-full group-hover:opacity-20 transition-opacity`}></div>
+            
+            <div className="flex items-start justify-between mb-4">
+              <div className={`p-3 rounded-xl bg-gradient-to-br ${stat.gradient} shadow-lg shadow-purple-900/20`}>
+                {stat.icon}
+              </div>
+              <span className="text-xs font-medium text-gray-400 bg-white/5 px-2 py-1 rounded-lg border border-white/5">
+                +2.5% this week
+              </span>
+            </div>
+            
+            <div>
+              <h3 className="text-gray-400 text-sm font-medium mb-1">{stat.title}</h3>
+              <p className="text-3xl font-bold text-white">{stat.value}</p>
+              <p className="text-xs text-gray-500 mt-2">{stat.sub}</p>
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="p-4">
-        {
-          isLoading ? <span className="loading loading-spinner text-error"></span>
-            :
-            requests.length > 0 ? (
-              <>
-                <h3 className="text-lg font-semibold mb-2">Your Recent Requests</h3>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full bg-white dark:bg-[#18122B] rounded-2xl shadow-md border border-[#c30027]/10">
-                    <thead>
-                      <tr className="bg-[#FDEDF3] dark:bg-[#393053] text-[#c30027]">
-                        <th className="p-3 text-left">Recipient</th>
-                        <th className="p-3 text-left">Location</th>
-                        <th className="p-3 text-left">Date</th>
-                        <th className="p-3 text-left">Time</th>
-                        <th className="p-3 text-left">Blood Group</th>
-                        <th className="p-3 text-left">Status</th>
-                        <th className="p-3 text-left">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {requests.map((req) => (
-                        <tr key={req._id} className="border-t">
-                          <td className="p-3">{req.recipientName}</td>
-                          <td className="p-3">{req.recipientDistrict}, {req.recipientUpazila}</td>
-                          <td className="p-3">{req.donationDate}</td>
-                          <td className="p-3">{req.donationTime}</td>
-                          <td className="p-3">{req.bloodGroup}</td>
-                          <td className="p-3">
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-bold ${statusColors[req.donationStatus] || "bg-gray-200"
-                                }`}
-                            >
-                              {req.donationStatus}
-                            </span>
-                          </td>
-                          <td className="p-3 flex flex-wrap gap-2">
-                            <button
-                              className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold hover:bg-blue-200 transition text-xs"
-                              onClick={() => navigate(`/dashboard/donation-request-details-edit/${req._id}`)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="px-3 py-1 rounded-full bg-green-100 text-green-700 font-semibold hover:bg-green-200 transition text-xs"
-                              onClick={() => navigate(`/dashboard/donation-request-details/${req._id}`)}
-                            >
-                              View
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <button
-                  className="mt-4 px-4 py-2 bg-[#c30027] text-white rounded-full font-semibold hover:bg-red-700 transition"
-                  onClick={() => navigate("/dashboard/my-donation-requests")}
-                >
-                  View My All Requests
-                </button>
-              </>
-            ) : (
-              <div className="text-gray-500 mt-8">You have not made any donation requests yet.</div>
-            )}
+      {/* Recent Requests Section */}
+      <div className="rounded-3xl bg-white/5 border border-white/10 overflow-hidden backdrop-blur-sm">
+        <div className="p-6 border-b border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-white">Recent Requests</h2>
+            <p className="text-sm text-gray-400">Latest blood donation requests from you</p>
+          </div>
+          <button
+            onClick={() => navigate("/dashboard/my-donation-requests")}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium transition-all group"
+          >
+            View All
+            <FaArrowRight className="group-hover:translate-x-1 transition-transform text-xs" />
+          </button>
+        </div>
+
+        <div className="p-6">
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <span className="loading loading-spinner loading-lg text-purple-500"></span>
+            </div>
+          ) : requests.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="text-gray-400 text-sm border-b border-white/10">
+                    <th className="pb-4 font-medium pl-4">Recipient</th>
+                    <th className="pb-4 font-medium">Location</th>
+                    <th className="pb-4 font-medium">Date & Time</th>
+                    <th className="pb-4 font-medium">Group</th>
+                    <th className="pb-4 font-medium">Status</th>
+                    <th className="pb-4 font-medium text-right pr-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm">
+                  {requests.map((req) => (
+                    <tr key={req._id} className="group hover:bg-white/5 transition-colors border-b border-white/5 last:border-0">
+                      <td className="py-4 pl-4">
+                        <div className="font-medium text-white">{req.recipientName}</div>
+                      </td>
+                      <td className="py-4 text-gray-400">
+                        {req.recipientDistrict}, {req.recipientUpazila}
+                      </td>
+                      <td className="py-4 text-gray-400">
+                        <div className="text-white">{req.donationDate}</div>
+                        <div className="text-xs opacity-70">{req.donationTime}</div>
+                      </td>
+                      <td className="py-4">
+                        <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-500/20 text-red-400 font-bold text-xs border border-red-500/30">
+                          {req.bloodGroup}
+                        </span>
+                      </td>
+                      <td className="py-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${statusColors[req.donationStatus] || "bg-gray-500/10 text-gray-400 border-gray-500/20"}`}>
+                          {req.donationStatus}
+                        </span>
+                      </td>
+                      <td className="py-4 pr-4 text-right">
+                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => navigate(`/dashboard/donation-request-details-edit/${req._id}`)}
+                            className="px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20 text-xs transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => navigate(`/dashboard/donation-request-details/${req._id}`)}
+                            className="px-3 py-1.5 rounded-lg bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 border border-purple-500/20 text-xs transition-colors"
+                          >
+                            View
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-white/5 rounded-2xl border border-dashed border-white/10">
+              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FaRegListAlt className="text-2xl text-gray-500" />
+              </div>
+              <h3 className="text-lg font-medium text-white">No Requests Found</h3>
+              <p className="text-gray-400 text-sm mt-1">You haven't created any donation requests yet.</p>
+              <button
+                onClick={() => navigate("/dashboard/create-donation-request")}
+                className="mt-4 px-6 py-2 bg-gradient-to-r from-pink-500 to-rose-600 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-pink-500/25 transition-all"
+              >
+                Create Request
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
