@@ -2,7 +2,7 @@ import axios from "axios";
 
 const useAxiosPublic = () => {
   const instance = axios.create({
-    baseURL: "http://localhost:5000/",
+    baseURL: "https://blood-lagbe-server.vercel.app/",
   });
 
   return instance;
