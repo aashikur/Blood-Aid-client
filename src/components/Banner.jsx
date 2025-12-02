@@ -68,7 +68,7 @@ const Banner = () => {
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in-up delay-300">
           <button
-            onClick={() => navigate("/registration")}
+            onClick={() => navigate(user ? "/dashboard" : "/registration")}
             className="btn-primary-gradient px-8 py-4 rounded-full font-semibold text-lg flex items-center gap-2 group"
           >
             Get Started <FaArrowRight className="group-hover:translate-x-1 transition-transform" />

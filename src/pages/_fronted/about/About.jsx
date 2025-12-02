@@ -259,7 +259,7 @@ export default function About() {
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-3 lg:justify-end">
-                <GradientButton href="/register">Join as Donor</GradientButton>
+                <GradientButton href="/registration">Join as Donor</GradientButton>
                 <a className="btn btn-ghost" href="/sponsor">Sponsor a Drive</a>
               </div>
             </div>
