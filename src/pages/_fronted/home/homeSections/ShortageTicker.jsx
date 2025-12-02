@@ -1,6 +1,7 @@
 // src/features/home/components/ShortageTicker.jsx
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
+import { getBloodShortageStats } from "@/services/publicAPI";
 
 const BLOOD_TYPES = ["A+","A-","B+","B-","O+","O-","AB+","AB-"];
 const LS_KEY = "bloodaid_ticker_dismissed_at";
@@ -19,10 +20,14 @@ export default function ShortageTicker({
     (async () => {
       try {
         setLoading(true);
-        const res = await fetch(endpoint);
-        if (!res.ok) throw new Error("No shortage endpoint");
-        const data = await res.json();
-        if (active) setRows(Array.isArray(data) ? data : []);
+        const result = await getBloodShortageStats();
+        if (active) {
+          if (result.success) {
+            setRows(Array.isArray(result.data) ? result.data : []);
+          } else {
+            setRows(MOCK_SHORTAGE); // fallback
+          }
+        }
       } catch {
         if (active) setRows(MOCK_SHORTAGE); // fallback
       } finally {

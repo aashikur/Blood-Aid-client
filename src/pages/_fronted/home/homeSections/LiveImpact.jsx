@@ -2,6 +2,7 @@
 // FIXED: Moved useCountUpNumber calls to the top level to obey the Rules ofHooks.
 
 import { useEffect, useMemo, useState } from "react";
+import { getDashboardStats, getVerifiedHospitals } from "@/services/publicAPI";
 
 export default function LiveImpact({
   statsEndpoint = "/admin-dashboard-stats",
@@ -14,24 +15,23 @@ export default function LiveImpact({
   const [updatedAt, setUpdatedAt] = useState(null);
 
   async function load() {
-    // This function remains the same
+    // Using centralized API service
     setLoading(true);
     setErr("");
     try {
-      const [sRes, hRes] = await Promise.allSettled([
-        fetch(statsEndpoint),
-        fetch(hospitalsEndpoint),
+      const [statsResult, hospitalsResult] = await Promise.allSettled([
+        getDashboardStats(),
+        getVerifiedHospitals(),
       ]);
 
-      if (sRes.status === "fulfilled" && sRes.value.ok) {
-        const s = await sRes.value.json();
-        setRaw(s);
+      if (statsResult.status === "fulfilled" && statsResult.value.success) {
+        setRaw(statsResult.value.data);
       } else {
         setRaw(null);
       }
 
-      if (hRes.status === "fulfilled" && hRes.value.ok) {
-        const hJson = await hRes.value.json();
+      if (hospitalsResult.status === "fulfilled" && hospitalsResult.value.success) {
+        const hJson = hospitalsResult.value.data;
         const count = Array.isArray(hJson)
           ? hJson.filter((i) => i.verified).length
           : typeof hJson?.total === "number"
