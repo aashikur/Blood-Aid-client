@@ -3,81 +3,71 @@ import React from "react";
 export default function SidebarLoading({ open = true }) {
   return (
     <aside
-      className={`bg-white dark:bg-[#18122B] min-h-screen flex flex-col transition-all duration-300
-        ${open ? "w-64" : "w-16"} 
-        border-r border-[#c30027]/10`}
+      className={`fixed md:static z-40 h-screen bg-[#0B0B15] border-r border-white/10 transition-all duration-300 flex flex-col
+        ${open ? "w-64" : "w-20"}
+      `}
     >
-      {/* Top: Profile + Toggle */}
-      <div className="flex flex-col items-center py-6 border-b border-[#c30027]/10">
-        {/* Visit Website link */}
-        {open && (
-          <div className="h-4 w-28 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-4"></div>
-        )}
-
-        {/* Profile Image */}
-        <div className="w-14 h-14 rounded-full border-2 border-[#c30027] mb-2 bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
-
-        {/* User Name */}
-        {open && (
-          <>
-            <div className="h-4 w-24 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-1"></div>
-            <div className="flex items-center gap-1">
-              <div className="h-3 w-16 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-              <div className="h-3 w-10 bg-gray-300 dark:bg-gray-700 rounded-full animate-pulse"></div>
-            </div>
-          </>
-        )}
-
-        {/* Toggle Button */}
-        <div className="mt-4 p-2 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse w-8 h-8"></div>
+      {/* Logo Area Skeleton */}
+      <div className="h-20 flex items-center justify-center border-b border-white/10 relative">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse"></div>
+          {open && (
+            <div className="h-6 w-24 bg-white/10 rounded animate-pulse"></div>
+          )}
+        </div>
       </div>
 
-      {/* Power Links Skeleton */}
-      {open && (
-        <div className="mt-6 px-4">
-          <div className="h-3 w-24 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-3"></div>
+      {/* Navigation Skeleton */}
+      <div className="flex-1 overflow-y-auto py-6 px-3 custom-scrollbar space-y-8">
+        {/* Section 1 */}
+        <div className="space-y-3">
+          {open && (
+            <div className="px-4 mb-2 h-3 w-20 bg-white/5 rounded animate-pulse"></div>
+          )}
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={`s1-${i}`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 animate-pulse
+                ${!open && "justify-center px-2"}
+              `}
+            >
+              <div className="w-5 h-5 rounded bg-white/10"></div>
+              {open && <div className="h-4 w-32 bg-white/10 rounded"></div>}
+            </div>
+          ))}
         </div>
-      )}
-      <nav className="flex flex-col gap-2 px-2">
-        {[...Array(open ? 4 : 4)].map((_, i) => (
-          <div
-            key={i}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 bg-gray-200 dark:bg-gray-700 animate-pulse ${
-              open ? "justify-start" : "justify-center"
-            }`}
-          >
-            <div className="w-5 h-5 rounded-full bg-gray-400 dark:bg-gray-600"></div>
-            {open && <div className="h-3 w-24 bg-gray-300 dark:bg-gray-600 rounded"></div>}
-          </div>
-        ))}
-      </nav>
 
-      {/* General Links Skeleton */}
-      {open && (
-        <div className="mt-6 px-4">
-          <div className="h-3 w-24 bg-gray-300 dark:bg-gray-700 rounded animate-pulse mb-3"></div>
+        {/* Section 2 */}
+        <div className="space-y-3">
+          {open && (
+            <div className="px-4 mb-2 h-3 w-16 bg-white/5 rounded animate-pulse"></div>
+          )}
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={`s2-${i}`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 animate-pulse
+                ${!open && "justify-center px-2"}
+              `}
+            >
+              <div className="w-5 h-5 rounded bg-white/10"></div>
+              {open && <div className="h-4 w-28 bg-white/10 rounded"></div>}
+            </div>
+          ))}
         </div>
-      )}
-      <nav className="flex flex-col gap-2 px-2">
-        {[...Array(open ? 5 : 5)].map((_, i) => (
-          <div
-            key={i}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 bg-gray-200 dark:bg-gray-700 animate-pulse ${
-              open ? "justify-start" : "justify-center"
-            }`}
-          >
-            <div className="w-5 h-5 rounded-full bg-gray-400 dark:bg-gray-600"></div>
-            {open && <div className="h-3 w-24 bg-gray-300 dark:bg-gray-600 rounded"></div>}
-          </div>
-        ))}
-      </nav>
+      </div>
 
-      {/* Dark / Light Toggle */}
-      <div className="flex justify-center items-center py-4 mt-auto">
-        <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-700 animate-pulse"></div>
-        {open && (
-          <div className="ml-2 h-3 w-20 bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-        )}
+      {/* User Profile Skeleton */}
+      <div className="p-4 border-t border-white/10 bg-[#131320]/50">
+        <div className={`flex items-center gap-3 ${!open && "justify-center"}`}>
+          <div className="w-10 h-10 rounded-full bg-white/10 animate-pulse shrink-0"></div>
+
+          {open && (
+            <div className="flex flex-col gap-2 w-full">
+              <div className="h-3 w-24 bg-white/10 rounded animate-pulse"></div>
+              <div className="h-2 w-16 bg-white/5 rounded animate-pulse"></div>
+            </div>
+          )}
+        </div>
       </div>
     </aside>
   );
