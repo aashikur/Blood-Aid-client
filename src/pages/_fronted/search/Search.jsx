@@ -66,7 +66,7 @@ export default function OptionSearch() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 min-h-[70vh] grid md:grid-cols-4 gap-6">
+    <div className="max-w-6xl mx-auto p-6 pt-28 pb-12 min-h-[70vh] grid md:grid-cols-4 gap-6">
       {/* Left Sidebar Filter */}
       <div className="md:col-span-1 bg-white dark:bg-[#1c1c2e] p-5 rounded-2xl shadow-md h-fit">
         <h2 className="text-xl font-bold text-[#c30027] mb-4 text-center">

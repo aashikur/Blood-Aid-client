@@ -8,13 +8,6 @@ import useAxiosPublic from "@/hooks/axiosPublic";
 import Loading from "@/pages/_fronted/home/Loading";
 import BloodRequestCard from "@/components/home/BloodRequestCard";
 
-const statusColors = {
-    pending: "bg-yellow-100 text-yellow-700",
-    inprogress: "bg-blue-100 text-blue-700",
-    done: "bg-green-100 text-green-700",
-    canceled: "bg-red-100 text-red-700",
-};
-
 export default function DonationRequestsPublic() {
     const axiosPublic = useAxiosPublic();
     const navigate = useNavigate();
@@ -53,6 +46,9 @@ export default function DonationRequestsPublic() {
                 icon: "error",
                 title: "Oops...",
                 text: "You need to login first!",
+                background: "#1A103C",
+                color: "#fff",
+                confirmButtonColor: "#8B5CF6"
             })
             navigate("/login");
             return;
@@ -62,16 +58,24 @@ export default function DonationRequestsPublic() {
             text: "Do you want to Donate blood to this Person?",
             icon: "question",
             showCancelButton: true,
-            confirmButtonColor: "#c30027",
-            cancelButtonColor: "#aaa",
+            confirmButtonColor: "#8B5CF6",
+            cancelButtonColor: "#d33",
             confirmButtonText: "Yes, Please!",
+            background: "#1A103C",
+            color: "#fff"
         }).then((result) => {
             if (result.isConfirmed) {
                 axiosPublic.patch(`/donation-request/${id}/respond`).then(() => {
-                    Swal.fire("Thank you!", "You have responded to donate.", "success");
+                    Swal.fire({
+                        title: "Thank you!",
+                        text: "You have responded to donate.",
+                        icon: "success",
+                        background: "#1A103C",
+                        color: "#fff",
+                        confirmButtonColor: "#8B5CF6"
+                    });
                     // Optionally refetch data
-                            queryClient.invalidateQueries(["public-donation-requests"]);
-
+                    queryClient.invalidateQueries(["public-donation-requests"]);
                 });
             }
         });
@@ -80,102 +84,84 @@ export default function DonationRequestsPublic() {
     if (isLoading) return <Loading></Loading>
 
     return (
-        <div className="p-4 max-w-6xl mx-auto">
-           <div className="flex flex-col sm:flex-row gap-2  justify-between border border-gray-100 dark:border-gray-700 shadow px-4 py-3 items-center rounded-2xl my-4">
-             <h2 className="text-xl sm:text-2xl font-bold text-[#c30027]  text-center">
-               Total Requested : ({filteredRequests.length})
-            </h2>
-            <button className="flex btn justify-center items-center gap-2 bg-gradient-to-tr from-red-800   to-red-400 text-white px-6 py-2 rounded-full font-semibold hover:bg-[#a80020] transition cursor-pointer"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z"></path></svg> Create Request</button>
+        <div className="min-h-screen w-full pt-28 pb-12 relative">
+           {/* Background Elements */}
+           <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] -z-10" />
+           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-[100px] -z-10" />
 
-
-           </div>
-            {/* Search & Filter */}
-            <div className="flex flex-col md:flex-row gap-3 mb-4 items-center justify-between">
-                <input
-                    type="text"
-                    placeholder="Search by recipient, location, or blood group"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full md:w-1/2 px-4 py-2 rounded-full border border-[#c30027]/30 bg-[#FDEDF3] dark:bg-[#393053] outline-none"
-                />
-                <div className="flex gap-2 items-center flex-wrap justify-center">
-                    <span className="font-semibold ">Status:</span>
-                    {["all", "pending", "inprogress", "done", "canceled"].map((status) => (
-                        <button
-                            key={status}
-                            className={`px-3 py-1 rounded-full font-semibold text-xs ${statusFilter === status
-                                    ? "bg-[#c30027] text-white"
-                                    : "bg-gray-200 text-[#c30027]"
-                                }`}
-                            onClick={() => setStatusFilter(status)}
-                        >
-                            {status.charAt(0).toUpperCase() + status.slice(1)}
-                        </button>
-                    ))}
-                </div>
-            </div>
-            {/* Grid Layout */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {filteredRequests.length > 0 ? (
-                    filteredRequests.map((req, idx) => (
-                        // <div
-                        //     key={req._id}
-                        //     className="bg-white dark:bg-[#18122B] rounded-2xl shadow-md border border-[#c30027]/10 p-5 flex flex-col gap-2"
-                        // >
-                        //     <div className="flex justify-between items-center">
-                        //         <span className="font-bold text-[#c30027] text-lg">
-                        //             {req.recipientName}
-                        //         </span>
-                        //         <span
-                        //             className={`px-2 py-1 rounded-full text-xs font-bold ${statusColors[req.donationStatus] || "bg-gray-200"
-                        //                 }`}
-                        //         >
-                        //             {req.donationStatus}
-                        //         </span>
-                        //     </div>
-                        //     <div className="text-sm text-gray-500 dark:text-gray-300">
-                        //         <b>Location:</b> {req.recipientDistrict}, {req.recipientUpazila}
-                        //     </div>
-                        //     <div className="text-sm">
-                        //         <b>Date:</b> {req.donationDate} <b>Time:</b> {req.donationTime}
-                        //     </div>
-                        //     <div className="text-sm">
-                        //         <b>Blood Group:</b>{" "}
-                        //         <span className="font-bold text-[#c30027]">{req.bloodGroup}</span>
-                        //     </div>
-                        //     <div className="flex gap-2 mt-2">
-                        //         <button
-                        //             className="px-3 py-1 rounded-full bg-green-100 text-green-700 font-semibold hover:bg-green-200 transition text-xs"
-                        //             onClick={() => navigate(`/dashboard/donation-request-details/${req._id}`)}
-                        //         >
-                        //             View
-                        //         </button>
-                        //         {/* Respond/Responded Button */}
-                        //         {req.donationStatus === "pending" ? (
-                        //             <button
-                        //                 className="px-3 py-1 rounded-full bg-[#c30027] text-white font-semibold hover:bg-red-700 transition text-xs"
-                        //                 onClick={() => handleRespond(req._id)}
-                        //             >
-                        //                 Respond
-                        //             </button>
-                        //         ) : (
-                        //             <button
-                        //                 className="px-3 py-1 rounded-full bg-gray-300 text-gray-500 font-semibold cursor-not-allowed text-xs"
-                        //                 disabled
-                        //             >
-                        //                 Responded
-                        //             </button>
-                        //         )}
-                        //     </div>
-                         // </div>
-<BloodRequestCard key={req._id} req={req} handleRespond={handleRespond} />
-                 
-                    ))
-                ) : (
-                    <div className="col-span-full text-center p-4 text-gray-400">
-                        No requests found
+           <div className="max-w-7xl mx-auto px-4 md:px-6">
+               {/* Header Section */}
+               <div className="glass-panel rounded-2xl p-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div>
+                        <h2 className="text-2xl md:text-3xl font-bold text-white">
+                            Donation <span className="text-gradient">Requests</span>
+                        </h2>
+                        <p className="text-gray-400 text-sm mt-1">
+                            Total Requests: <span className="text-white font-bold">{filteredRequests.length}</span>
+                        </p>
                     </div>
-                )}
+                    <button 
+                        onClick={() => navigate('/dashboard/donor/requests/create')}
+                        className="btn-primary-gradient px-6 py-3 rounded-full font-bold flex items-center gap-2"
+                    >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Create Request
+                    </button>
+               </div>
+
+                {/* Search & Filter */}
+                <div className="glass-panel rounded-2xl p-4 mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <div className="relative w-full md:w-1/2">
+                        <input
+                            type="text"
+                            placeholder="Search by recipient, location, or blood group..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                        />
+                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    
+                    <div className="flex gap-2 items-center flex-wrap justify-center">
+                        <span className="text-gray-400 text-sm font-medium mr-2">Status:</span>
+                        {["all", "pending", "inprogress", "done", "canceled"].map((status) => (
+                            <button
+                                key={status}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                                    statusFilter === status
+                                        ? "bg-purple-600 text-white shadow-lg shadow-purple-500/25"
+                                        : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                                }`}
+                                onClick={() => setStatusFilter(status)}
+                            >
+                                {status.charAt(0).toUpperCase() + status.slice(1)}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Grid Layout */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredRequests.length > 0 ? (
+                        filteredRequests.map((req) => (
+                            <BloodRequestCard key={req._id} req={req} handleRespond={handleRespond} />
+                        ))
+                    ) : (
+                        <div className="col-span-full glass-panel rounded-2xl p-12 text-center">
+                            <div className="w-20 h-20 mx-auto bg-white/5 rounded-full flex items-center justify-center mb-4">
+                                <svg className="w-10 h-10 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-2">No Requests Found</h3>
+                            <p className="text-gray-400">Try adjusting your search or filters to find what you're looking for.</p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

@@ -49,7 +49,7 @@ export default function Hospitals() {
   const verifiedCount = useMemo(() => items.filter((h) => h.verified).length, [items]);
 
   return (
-    <main className="w-full">
+    <main className="w-full pt-28 pb-12">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         {/* Hero + Filters */}
         <section className="w-full py-8 md:py-10">

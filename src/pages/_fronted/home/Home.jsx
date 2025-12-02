@@ -10,7 +10,7 @@ const Home = () => {
   return (
     <>
       <Banner />
-      <ShortageTicker sticky />
+      <ShortageTicker/>
       <LiveImpact />
       <SafetyEligibility />
       <BlogHighlights />

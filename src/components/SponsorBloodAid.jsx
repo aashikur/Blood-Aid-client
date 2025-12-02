@@ -1,150 +1,67 @@
-import { BiArrowFromRight } from "react-icons/bi";
-import { BsArrowRight } from "react-icons/bs";
-import { FaEnvelope, FaLinkedin, FaDiscord, FaFacebook, FaXTwitter, FaHeart } from "react-icons/fa6";
+import { Link } from "react-router";
 import FundingForm from "./funding/FundingForm";
+import FundingStatCard from "./funding/FundingStatCard";
+import FundingTable from "./funding/FundingTable";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import FundingPage from "@/pages/_fronted/funding/FundingPage";
-import { FaCcMastercard } from "react-icons/fa";
-import FundingTable from "./funding/FundingTable";
-import Swal from "sweetalert2";
+import { FaHeart } from "react-icons/fa6";
 
-const handleComingSoon = () => {
-  Swal.fire({
-    title: 'Info',
-    text: 'Coming soon',
-    icon: 'info',
-    confirmButtonText: 'Okay',
-    customClass: {
-      popup:
-        '',
-      confirmButton:
-        'mt-4 bg-gradient-to-tr from-red-500 via-orange-600 to-yellow-500 hover:brightness-110 text-white px-6 py-2 rounded-full font-semibold transition-all',
-    },
-    buttonsStyling: false,
-    backdrop: 'bg-black/50 backdrop-blur-sm',
-  });
-};
-const contacts = [
-  {
-    name: "LinkedIn",
-    desc: "Professional networking and updates",
-    icon: <FaLinkedin className="text-[#0A66C2] text-2xl" />,
-    link: "https://linkedin.com/",
-  },
-  {
-    name: "Discord",
-    desc: "Join our community for real-time discussions",
-    icon: <FaDiscord className="text-[#5865F2] text-2xl" />,
-    link: "https://discord.com/",
-  },
-  {
-    name: "Facebook",
-    desc: "Follow for updates and behind-the-scenes content",
-    icon: <FaFacebook className="text-[#1877F3] text-2xl" />,
-    link: "https://facebook.com/",
-  },
-  {
-    name: "X (Twitter)",
-    desc: "Latest thoughts and health insights",
-    icon: <FaXTwitter className="text-black dark:text-white text-2xl" />,
-    link: "https://twitter.com/",
-  },
-];
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
-const SponsorBloodAid = () => {
+export default function SponsorBloodAid() {
   return (
-    <div className="min-h-screen   bg-gradient-to-br from-red-50 via-pink-100 to-white dark:from-[#18122B] dark:via-[#393053] dark:to-[#18122B] flex flex-col items-center py-12 px-2">
-      {/* <h1 className="text-3xl md:text-5xl font-extrabold text-center text-[#c30027] mb-2"> */}
-      <h1 className="block bg-gradient-to-r from-red-500 via-orange-500 to-yellow-600 bg-clip-text text-transparent font-extrabold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-center animate-text">
-        Help Keep <span className="">BloodAid</span> Alive
-      </h1>
-      <p className="text-lg text-gray-700 dark:text-gray-200 text-center mb-2">
-        Your support helps us save more lives and grow the BloodAid community.
-      </p>
-      <p className="text-base text-gray-500 dark:text-gray-400 text-center mb-8">
-        Reach out or connect with us on any platform below!
-      </p>
+    <div className="min-h-screen w-full pt-28 pb-12 relative">
+      {/* Background Elements */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px] -z-10" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-[100px] -z-10" />
 
-      {/* Email Card */}
-      <div className="w-full max-w-4xl bg-white/80 dark:bg-[#18122B]/80 backdrop-blur-md rounded-2xl shadow-lg p-6 mb-8 flex flex-col items-center border border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-2 mb-2">
-          <FaEnvelope className="text-[#c30027] text-xl" />
-          <span className="font-semibold text-lg text-[#c30027]">Get in Touch</span>
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
+        {/* Header */}
+        <div className="glass-panel rounded-3xl p-8 md:p-12 mb-12 text-center relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 -z-10" />
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+            Support <span className="text-gradient">BloodAid</span>
+          </h1>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            Your contribution helps us save more lives. Join our mission to make blood donation accessible to everyone.
+          </p>
         </div>
-        <p className="text-gray-600 dark:text-gray-300 mb-3 text-center">
-          Ready to sponsor, partner, or have questions? Let’s connect!
-        </p>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <button className="btn items-center  justify-center bg-gradient-to-tr from-red-500 via-orange-500 to-yellow-600 text-white px-6 py-2 rounded-full font-semibold  hover:bg-[#a80020] hover:text-white transition" onClick={() => document.getElementById('my_modal_3').showModal()}><FaCcMastercard className="" />
-            Support Funding Now</button>
-          <a
-            href="mailto:bloodaid.team@email.com"
-            className="flex items-center gap-2 hover:text-white hover:border-transparent border-gray-500 border text-gray-500 px-6 py-2 rounded-full  hover:bg-[#a80020] transition"
-          >
-            <FaEnvelope classname="" /> bloodaid.team@email.com
-          </a>
-        </div>
-      </div>
 
-      {/* Modal for the POP FUNDING FORM  */}
-      <dialog id="my_modal_3" className="modal px-0 dark:bg-[#18122B]">
-        <div className="modal-box px-0  dark:bg-[#18122B]">
-          <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-          </form>
-          <Elements className="w-full bg-red-50" stripe={stripePromise}>
-            <FundingForm />
-          </Elements>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column: Stats & Form */}
+          <div className="lg:col-span-1 space-y-8">
+            <FundingStatCard />
+            
+            <div className="glass-panel p-6 rounded-2xl">
+              <h3 className="text-xl font-bold text-white mb-4 border-b border-white/10 pb-2">
+                Make a Donation
+              </h3>
+              <Elements stripe={stripePromise}>
+                <FundingForm />
+              </Elements>
+            </div>
+          </div>
 
-          <div className="divider px-4"><span className="text-gray-500 dark:text-gray-400">or</span></div>
-          <div className="px-4 w-full flex flex-row justify-center gap-4">
-            <div onClick={handleComingSoon} className="border flex-1 border-red-200 rounded-lg flex items-center bg-gray-200 opacity-70 transition duration-300 hover:opacity-100">  <img className="" src="/logo/bank-bkash.png" alt="bkash-logo" /> </div>
-            <div className="border flex-1 border-red-200 rounded-lg flex items-center bg-gray-200 opacity-70 transition duration-300 hover:opacity-100">  <img className="" src="/logo/bank-nagod.png" alt="nagod-logo" />  </div>
-            <div className="border flex-1 border-red-200 rounded-lg flex items-center bg-gray-200 opacity-70 transition duration-300 hover:opacity-100">  <img className="p-4" src="/logo/bank-rocket.png" alt="rocket-logo" /> </div>
+          {/* Right Column: Recent Donations Table */}
+          <div className="lg:col-span-2">
+            <div className="glass-panel p-6 rounded-2xl h-full">
+              <div className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                <h3 className="text-xl font-bold text-white">
+                  Recent Supporters
+                </h3>
+                <Link to="/funding" className="text-sm text-purple-400 hover:text-purple-300 transition-colors">
+                  View All
+                </Link>
+              </div>
+              <FundingTable />
+            </div>
           </div>
         </div>
-      </dialog >
 
-      {/* Funding Table */}
-      <div className=" w-full max-w-4xl bg-white/80 opacity-90 dark:bg-[#18122B]/80 backdrop-blur-md rounded-2xl shadow-lg p-6 mb-8 flex flex-col items-center border border-gray-200 dark:border-gray-700" >
-        <FundingTable />
-      </div >
-
-
-      {/* Social Cards */}
-      <div div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" >
-        {
-          contacts.map((c) => (
-            <div
-              key={c.name}
-              className="bg-white/80 dark:bg-[#18122B]/80 backdrop-blur-md rounded-2xl shadow p-6 flex flex-col border border-gray-200 dark:border-gray-700"
-            >
-              <div className="flex items-center gap-3 mb-2">
-                {c.icon}
-                <span className="font-semibold text-lg">{c.name}</span>
-              </div>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">{c.desc}</p>
-              <a
-                href={c.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 border-[#c30027] text-[#c30027] font-semibold hover:bg-[#FDEDF3] transition w-fit"
-              >
-                Connect <span aria-hidden><BsArrowRight /></span>
-              </a>
-            </div>
-          ))
-        }
-      </div >
-
-      <p className="text-center text-gray-500 dark:text-gray-400 mt-8">
-        Thank you for considering supporting <span className="text-[#c30027] font-semibold">BloodAid</span> <FaHeart className="inline text-[#c30027]" />
-      </p>
-    </div >
+        <p className="text-center text-gray-500 mt-12 flex items-center justify-center gap-2">
+          Thank you for considering supporting <span className="text-purple-400 font-semibold">BloodAid</span> <FaHeart className="text-red-500 animate-pulse" />
+        </p>
+      </div>
+    </div>
   );
-};
-
-export default SponsorBloodAid;
+}

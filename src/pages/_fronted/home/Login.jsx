@@ -1,179 +1,181 @@
-import { useContext, useState } from "react";
-import Lottie from "lottie-react";
-import { BiEnvelope, BiKey } from "react-icons/bi";
-import { FcGoogle } from "react-icons/fc";
-import { useNavigate, Link } from "react-router";
-import loginAnimation from "@/assets/loginAnimation.json";
-import { AuthContext } from "@/providers/AuthProvider";
-import { motion } from "framer-motion";
+import { Link, useLocation, useNavigate } from "react-router";
+import { useForm } from "react-hook-form";
+import useAuth from "@/hooks/useAuth";
 import Swal from "sweetalert2";
-import Loading from "./Loading";
+import Lottie from "lottie-react";
+import loginAnimation from "@/assets/loginAnimation.json";
+import { FaGoogle, FaEnvelope, FaLock } from "react-icons/fa";
 
-const Login = () => {
-  const { signIn, googleSignIn, user } = useContext(AuthContext);
+export default function Login() {
+  const { signIn, googleSignIn } = useAuth();
   const navigate = useNavigate();
-  const [error, setError] = useState("");
-  
-  if(user?.email){
-    navigate("/dashboard");
-    return null;
-  }
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
-  // Google login
-  const handleGoogle = () => {
-  googleSignIn()
-    .then((result) => {
-      const user = result.user;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-      Swal.fire({
-        icon: 'success',
-        title: `Welcome, ${user.displayName}!`,
-        text: 'You have successfully logged in with Google.',
-        timer: 2000,
-        showConfirmButton: false,
+  const onSubmit = (data) => {
+    signIn(data.email, data.password)
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+        Swal.fire({
+          title: "Welcome Back!",
+          text: "Login Successful",
+          icon: "success",
+          background: "#1e1e2e",
+          color: "#fff",
+          confirmButtonColor: "#a855f7",
+        });
+        navigate(from, { replace: true });
+      })
+      .catch((error) => {
+        console.error(error);
+        Swal.fire({
+          title: "Error!",
+          text: error.message,
+          icon: "error",
+          background: "#1e1e2e",
+          color: "#fff",
+          confirmButtonColor: "#ef4444",
+        });
       });
-
-      navigate("/dashboard");
-    })
-    .catch((err) => {
-      setError(err.message);
-
-      Swal.fire({
-        icon: 'error',
-        title: 'Login Failed',
-        text: err.message,
-      });
-    });
-};
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError("");
-    const form = e.target;
-    const email = form.email.value;
-    const pass = form.pass.value;
-
-    signIn(email, pass)
-    .then((result) => {
-      const user = result.user;
-
-      Swal.fire({
-        icon: 'success',
-        title: `Welcome, ${user.displayName}!`,
-        text: 'You have successfully logged in with Google.',
-        timer: 2000,
-        showConfirmButton: false,
-      });
-
-      navigate("/dashboard");
-    })
-    .catch((err) => {
-      setError(err.message);
-
-      Swal.fire({
-        icon: 'error',
-        title: 'Login Failed',
-        text: err.message,
-      });
-    });
   };
 
-    if(user?.email){
-    navigate("/dashboard");
-    return null;
-  } else {
-      return (
-    <div className="bg-gradient-to-br from-red-50 via-pink-100 to-white dark:from-[#18122B] dark:via-[#393053] dark:to-[#18122B]">
-      <div className="min-h-screen flex flex-col md:flex-row max-w-7xl mx-auto gap-5">
-        {/* Left Banner */}
-        <div className="hidden md:flex flex-col justify-center items-center flex-1">
-          <motion.div
-            animate={{ y: [0, 30, 0] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-            whileHover={{ scale: 1.05, filter: "blur(0px)" }}
-            className="flex gap-4 pb-10 blur-[4px] hover:blur-none transition"
-          >
-            <img className="rounded-xl" src="/logo/reg-1.png" alt="" />
-          </motion.div>
+  const handleGoogleSignIn = () => {
+    googleSignIn()
+      .then((result) => {
+        console.log(result.user);
+        Swal.fire({
+          title: "Welcome Back!",
+          text: "Google Login Successful",
+          icon: "success",
+          background: "#1e1e2e",
+          color: "#fff",
+          confirmButtonColor: "#a855f7",
+        });
+        navigate(from, { replace: true });
+      })
+      .catch((error) => {
+        console.error(error);
+        Swal.fire({
+          title: "Error!",
+          text: error.message,
+          icon: "error",
+          background: "#1e1e2e",
+          color: "#fff",
+          confirmButtonColor: "#ef4444",
+        });
+      });
+  };
+
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center pt-28 pb-12 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full bg-[#0B0B15] -z-20" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/20 rounded-full blur-[120px] -z-10" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-pink-500/20 rounded-full blur-[120px] -z-10" />
+
+      <div className="max-w-5xl w-full mx-4 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        {/* Animation Side */}
+        <div className="hidden md:flex flex-col items-center justify-center p-8">
+          <div className="w-full max-w-md">
+            <Lottie animationData={loginAnimation} loop={true} />
+          </div>
+          <h2 className="text-3xl font-bold mt-8 text-center">
+            Welcome Back to <span className="text-gradient">BloodAid</span>
+          </h2>
+          <p className="text-gray-400 text-center mt-4 max-w-sm">
+            Sign in to manage your donations, requests, and help save lives.
+          </p>
         </div>
 
-        {/* Right Form */}
-        <div className="flex-1 flex items-center justify-center">
-          <form
-            onSubmit={handleSubmit}
-            className="w-full max-w-xl bg-white dark:bg-[#18122B] rounded-3xl shadow-lg p-8"
-          >
-            <h2 className="text-3xl font-bold text-[#c30027] mb-2 text-center">Login</h2>
-            <div className="h-1 w-24 bg-pink-300 rounded-full mx-auto mb-6"></div>
+        {/* Form Side */}
+        <div className="glass-panel p-8 md:p-12 rounded-3xl w-full max-w-md mx-auto relative">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 to-pink-500" />
+          
+          <h2 className="text-3xl font-bold text-white mb-2">Sign In</h2>
+          <p className="text-gray-400 mb-8">Enter your details to continue</p>
 
-            {/* Google Login */}
-            <button
-              type="button"
-              onClick={handleGoogle}
-              className="w-full mb-6 py-3 rounded-full border-2 border-[#c30027] dark:border-white/70 text-white/70 text-[#c30027] font-semibold flex items-center justify-center gap-2 hover:bg-[#FDEDF3] transition"
-            >
-              <FcGoogle className="text-xl" />
-              Login with Google
-            </button>
-            <div className="divider text-gray-500 px-5">or</div>
-            {/* Email */}
-            <div className="mb-4">
-              <label className="block mb-1 font-semibold">Email</label>
-              <div className="flex items-center border rounded-lg px-3 bg-[#FDEDF3] dark:bg-[#393053]">
-                <BiEnvelope className="text-[#c30027] mr-2" />
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300 ml-1">Email</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <FaEnvelope className="text-gray-500" />
+                </div>
                 <input
-                  className="bg-transparent flex-1 py-2 outline-none"
                   type="email"
-                  name="email"
-                  placeholder="Enter your email"
-                  required
+                  placeholder="name@example.com"
+                  className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-white placeholder-gray-500 transition-all"
+                  {...register("email", { required: true })}
                 />
               </div>
+              {errors.email && (
+                <span className="text-red-400 text-xs ml-1">Email is required</span>
+              )}
             </div>
-            {/* Password */}
-            <div className="mb-4">
-              <label className="block mb-1 font-semibold">Password</label>
-              <div className="flex items-center border rounded-lg px-3 bg-[#FDEDF3] dark:bg-[#393053]">
-                <BiKey className="text-[#c30027] mr-2" />
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-300 ml-1">Password</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <FaLock className="text-gray-500" />
+                </div>
                 <input
-                  className="bg-transparent flex-1 py-2 outline-none"
                   type="password"
-                  name="pass"
-                  placeholder="Enter your password"
-                  required
+                  placeholder="••••••••"
+                  className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-white placeholder-gray-500 transition-all"
+                  {...register("password", { required: true })}
                 />
               </div>
+              {errors.password && (
+                <span className="text-red-400 text-xs ml-1">Password is required</span>
+              )}
+              <div className="flex justify-end">
+                <a href="#" className="text-xs text-purple-400 hover:text-purple-300 transition-colors">
+                  Forgot password?
+                </a>
+              </div>
             </div>
-            {/* Error */}
-            {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
-            {/* Remember Me */}
-            <div className="flex items-center gap-2 mb-4">
-              <input type="checkbox" name="remember" className="" />
-              <span className="text-sm">Remember Me</span>
-              <span className="ml-auto text-[13px] text-slate-500 cursor-pointer">
-                Forgot password?
-              </span>
-            </div>
-            {/* Login Button */}
+
             <button
               type="submit"
-              className="w-full py-3 rounded-full bg-gradient-to-tr from-red-800   to-red-400  text-white font-semibold hover:bg-[#a80020] transition flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl btn-primary-gradient font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all transform hover:-translate-y-0.5"
             >
-              Login Now
+              Sign In
             </button>
-            {/* Registration Redirect */}
-            <div className="text-center text-sm mt-4">
-              Don&apos;t have an account?{" "}
-              <Link to="/registration" className="text-[#c30027] underline">Register here</Link>
-            </div>
           </form>
+
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-[#131320] text-gray-500">Or continue with</span>
+            </div>
+          </div>
+
+          <button
+            onClick={handleGoogleSignIn}
+            className="w-full py-3 rounded-xl bg-white text-gray-900 font-bold flex items-center justify-center gap-3 hover:bg-gray-100 transition-all transform hover:-translate-y-0.5"
+          >
+            <FaGoogle className="text-red-500" />
+            Google
+          </button>
+
+          <p className="text-center mt-8 text-gray-400 text-sm">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-purple-400 font-bold hover:text-purple-300 transition-colors">
+              Sign Up
+            </Link>
+          </p>
         </div>
       </div>
     </div>
   );
-  }
-
-
-};
-
-export default Login;
+}

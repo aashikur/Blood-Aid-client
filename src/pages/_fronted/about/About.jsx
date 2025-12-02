@@ -26,7 +26,7 @@ export default function About() {
   }, []);
 
   return (
-    <main className="w-full">
+    <main className="w-full pt-28 pb-12">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         {/* Hero */}
         <section className="w-full py-10 md:py-14">
