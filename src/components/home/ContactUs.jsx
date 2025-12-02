@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { AuthContext } from "@/providers/AuthProvider";
 import { useNavigate } from "react-router";
 import useAxiosPublic from "@/hooks/axiosPublic";
+import { FaPaperPlane } from "react-icons/fa";
 
 const subjects = [
   "General Query",
@@ -14,7 +15,6 @@ const subjects = [
 ];
 
 export default function ContactUs() {
-//   const axiosSecure = useAxiosSecure();
   const axiosPublic = useAxiosPublic()
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -33,14 +33,15 @@ export default function ContactUs() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // User login check
     if (!user) {
       Swal.fire({
         icon: "warning",
         title: "Please login first!",
         text: "You need to login to send a message.",
-        confirmButtonColor: "#c30027",
-        confirmButtonText: "Go to Login"
+        confirmButtonColor: "#8B5CF6",
+        confirmButtonText: "Go to Login",
+        background: "#1A103C",
+        color: "#fff"
       }).then((result) => {
         if (result.isConfirmed) {
           navigate("/login");
@@ -57,82 +58,134 @@ export default function ContactUs() {
         subject: form.subject,
         message: form.message,
       });
-      Swal.fire("Success!", "Your message has been sent.", "success");
+      Swal.fire({
+        icon: "success",
+        title: "Message Sent!",
+        text: "We will get back to you soon.",
+        background: "#1A103C",
+        color: "#fff",
+        confirmButtonColor: "#8B5CF6"
+      });
       setForm({ subject: "", message: "" });
     } catch {
-      Swal.fire("Error!", "Failed to send message.", "error");
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "Failed to send message.",
+        background: "#1A103C",
+        color: "#fff",
+        confirmButtonColor: "#8B5CF6"
+      });
     }
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FDEDF3] dark:bg-[#18122B] py-12">
-      <div className="bg-white dark:bg-[#18122B] rounded-3xl shadow-lg max-w-[1500px] w-full flex flex-col md:flex-row overflow-hidden">
-        {/* Left: Floating Icon */}
-        <div className="flex-1 flex items-center justify-center bg-pink-100 dark:bg-[#393053] p-8">
-          <motion.img
-            src="/logo/faq-5.png"
-            alt="Contact Icon"
-            className="w-72 h-72 object-contain"
-            animate={{ y: [0, -20, 0, 20, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
-        {/* Right: Form */}
-        <div className="flex-1 flex flex-col justify-center p-8">
-          <h2 className="text-3xl font-bold text-[#c30027] mb-6">Contact us</h2>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5 py-5">
-            {/* Name (read-only) */}
-            <input
-              type="text"
-              name="name"
-              value={user?.displayName || "your-name ~ please login first"}
-              readOnly
-              className="px-4 py-3 rounded-full  bg-[#FDEDF3] dark:bg-[#393053] outline-none"
-              placeholder="Name"
-            />
-            {/* Email (read-only) */}
-            <input
-              type="email"
-              name="email"
-              value={user?.email || "your-email ~ please login first"}
-              readOnly
-              className="px-4 py-3 rounded-full  bg-[#FDEDF3] dark:bg-[#393053] outline-none"
-              placeholder="Email"
-            />
-            {/* Subject Dropdown */}
-            <select
-              name="subject"
-              value={form.subject}
-              onChange={handleChange}
-              required
-              className="px-4 py-3 rounded-full  bg-[#FDEDF3] dark:bg-[#393053] outline-none"
-            >
-              <option value="">Select Subject</option>
-              {subjects.map((subj) => (
-                <option key={subj} value={subj}>{subj}</option>
-              ))}
-            </select>
-            {/* Message */}
-            <textarea
-              name="message"
-              value={form.message}
-              onChange={handleChange}
-              required
-              placeholder="Message"
-              rows={4}
-              className="px-4 py-3 rounded-2xl  bg-[#FDEDF3] dark:bg-[#393053] outline-none"
-            />
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-full bg-gradient-to-r from-red-700 to-red-500 text-white font-semibold hover:bg-[#a80020] transition"
-            >
-              {loading ? "Sending..." : "Send Message"}
-            </button>
-          </form>
+    <section className="py-20 relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-600/10 rounded-full blur-[120px] -z-10"></div>
+
+      <div className="max-w-4xl mx-auto px-6">
+        <div className="glass-panel rounded-3xl p-8 md:p-12 flex flex-col md:flex-row gap-12 items-center">
+          
+          {/* Left Side: Text */}
+          <div className="flex-1 text-center md:text-left">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Get in <span className="text-gradient">Touch</span>
+            </h2>
+            <p className="text-gray-400 mb-8">
+              Have questions or feedback? We'd love to hear from you. Reach out to us and we'll respond as soon as possible.
+            </p>
+            
+            <div className="hidden md:block relative h-64 w-full">
+               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl"></div>
+               <div className="absolute inset-0 glass-panel rounded-2xl flex items-center justify-center">
+                  <FaPaperPlane className="text-6xl text-white/20" />
+               </div>
+            </div>
+          </div>
+
+          {/* Right Side: Form */}
+          <div className="flex-1 w-full">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              {/* Name (read-only) */}
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-gray-500 ml-4">Name</label>
+                <input
+                  type="text"
+                  value={user?.displayName || "Please login to continue"}
+                  readOnly
+                  className="w-full px-6 py-3 rounded-full bg-white/5 border border-white/10 text-gray-300 focus:outline-none cursor-not-allowed"
+                />
+              </div>
+
+              {/* Email (read-only) */}
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-gray-500 ml-4">Email</label>
+                <input
+                  type="email"
+                  value={user?.email || ""}
+                  readOnly
+                  className="w-full px-6 py-3 rounded-full bg-white/5 border border-white/10 text-gray-300 focus:outline-none cursor-not-allowed"
+                />
+              </div>
+
+              {/* Subject */}
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-gray-500 ml-4">Subject</label>
+                <div className="relative">
+                  <select
+                    name="subject"
+                    value={form.subject}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-6 py-3 rounded-full bg-white/5 border border-white/10 text-white focus:border-purple-500 focus:outline-none appearance-none"
+                  >
+                    <option value="" disabled className="bg-[#1A103C]">Select a subject</option>
+                    {subjects.map((sub) => (
+                      <option key={sub} value={sub} className="bg-[#1A103C] text-white">
+                        {sub}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                    ▼
+                  </div>
+                </div>
+              </div>
+
+              {/* Message */}
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-gray-500 ml-4">Message</label>
+                <textarea
+                  name="message"
+                  value={form.message}
+                  onChange={handleChange}
+                  required
+                  rows="4"
+                  className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white focus:border-purple-500 focus:outline-none resize-none"
+                  placeholder="How can we help you?"
+                ></textarea>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="mt-4 btn-primary-gradient w-full py-3 rounded-full font-semibold text-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <span className="loading loading-spinner loading-sm"></span>
+                ) : (
+                  <>
+                    Send Message <FaPaperPlane className="text-sm" />
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+
         </div>
       </div>
-    </div>
+    </section>
   );
 }

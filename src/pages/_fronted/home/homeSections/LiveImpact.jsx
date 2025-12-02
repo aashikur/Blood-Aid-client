@@ -1,6 +1,3 @@
-// src/features/home/components/LiveImpact.jsx
-// FIXED: Moved useCountUpNumber calls to the top level to obey the Rules ofHooks.
-
 import { useEffect, useMemo, useState } from "react";
 import { getDashboardStats, getVerifiedHospitals } from "@/services/publicAPI";
 
@@ -15,7 +12,6 @@ export default function LiveImpact({
   const [updatedAt, setUpdatedAt] = useState(null);
 
   async function load() {
-    // Using centralized API service
     setLoading(true);
     setErr("");
     try {
@@ -61,48 +57,44 @@ export default function LiveImpact({
     [raw, verifiedHospitals]
   );
 
-  // ====================================================================
-  // THE FIX: Call all hooks unconditionally at the top level.
-  // ====================================================================
   const livesSavedCount = useCountUpNumber(livesSaved);
   const activeDonorsCount = useCountUpNumber(activeDonors);
   const requestsFulfilledCount = useCountUpNumber(requestsFulfilled);
   const hospitalsCount = useCountUpNumber(hospitals);
-  // ====================================================================
 
   return (
-    <section className="w-full">
+    <section className="w-full py-12">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
-        <div className="relative overflow-hidden rounded-3xl border border-neutral-200/60 bg-white/80 p-6 md:p-8 shadow-[0_10px_30px_rgba(0,0,0,.06)] backdrop-blur dark:border-white/10 dark:bg-white/5 dark:shadow-[0_20px_60px_rgba(225,29,72,.12)]">
-          <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-rose-500/20 blur-3xl dark:bg-rose-500/30" />
+        <div className="relative overflow-hidden rounded-3xl glass-panel p-8 md:p-12">
+          {/* Decorative Glow */}
+          <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-purple-500/20 blur-[100px]" />
+          <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-pink-500/20 blur-[100px]" />
 
-          <div className="relative mb-4 flex items-center justify-between gap-3">
+          <div className="relative mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <p className="text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-400">Live impact</p>
-              <h2 className="text-2xl md:text-3xl font-semibold">Every drop making a difference</h2>
-              <p className="text-sm text-neutral-600 dark:text-neutral-300">
-                Real-time snapshot from our community and partners.
+              <p className="text-sm uppercase tracking-widest text-purple-400 font-semibold mb-2">Live Impact</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Every drop makes a difference</h2>
+              <p className="text-gray-400 max-w-xl">
+                Real-time snapshot from our community and partners. See how we are changing lives together.
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={load}
-                className="btn btn-ghost btn-sm"
-                title="Refresh stats"
-              >
-                <IconRefresh className="w-4 h-4" />
-                Refresh
-              </button>
-            </div>
+            <button
+              onClick={load}
+              className="btn-secondary-outline px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+              title="Refresh stats"
+            >
+              <IconRefresh className="w-4 h-4" />
+              Refresh
+            </button>
           </div>
 
           {err && (
-            <div className="alert alert-warning mb-4">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-lg mb-6">
               <span>{err}</span>
             </div>
           )}
 
-          <div className="stats stats-vertical lg:stats-horizontal bg-base-100 border border-base-300/40 shadow">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {loading ? (
               <>
                 <SkeletonStat />
@@ -112,35 +104,35 @@ export default function LiveImpact({
               </>
             ) : (
               <>
-                {/* Use the variables that hold the hook results */}
                 <StatCard
-                  icon={<IconHeart className="w-6 h-6 text-rose-600 dark:text-rose-400" />}
-                  label="Lives saved"
+                  icon={<IconHeart className="w-8 h-8 text-pink-500" />}
+                  label="Lives Saved"
                   value={livesSavedCount}
-                  accent="text-primary"
+                  subtext="And counting..."
                 />
                 <StatCard
-                  icon={<IconUsers className="w-6 h-6 text-sky-600 dark:text-sky-400" />}
-                  label="Active donors"
+                  icon={<IconUsers className="w-8 h-8 text-purple-500" />}
+                  label="Active Donors"
                   value={activeDonorsCount}
-                  accent="text-secondary"
+                  subtext="Heroes among us"
                 />
                 <StatCard
-                  icon={<IconCheck className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />}
-                  label="Requests fulfilled"
+                  icon={<IconCheck className="w-8 h-8 text-green-400" />}
+                  label="Requests Fulfilled"
                   value={requestsFulfilledCount}
+                  subtext="Successful matches"
                 />
                 <StatCard
-                  icon={<IconHospital className="w-6 h-6 text-violet-600 dark:text-violet-400" />}
-                  label="Verified hospitals"
+                  icon={<IconHospital className="w-8 h-8 text-blue-400" />}
+                  label="Verified Hospitals"
                   value={hospitalsCount}
-                  accent="text-accent"
+                  subtext="Trusted partners"
                 />
               </>
             )}
           </div>
 
-          <div className="mt-2 text-right text-xs text-neutral-500 dark:text-neutral-400">
+          <div className="mt-6 text-right text-xs text-gray-500">
             {updatedAt ? `Last updated: ${updatedAt.toLocaleTimeString()}` : "—"}
           </div>
         </div>
@@ -184,28 +176,23 @@ function mapMetrics(s, hospitalsVerified) {
 
 /* --------------- Stat card + skeleton --------------- */
 
-function StatCard({ icon, label, value, accent = "" }) {
+function StatCard({ icon, label, value, subtext }) {
   return (
-    <div className="stat">
-      <div className="stat-figure">{icon}</div>
-      <div className="stat-title">{label}</div>
-      <div className={`stat-value ${accent}`}>{formatNumber(value)}</div>
+    <div className="glass-panel p-6 rounded-2xl flex flex-col items-center text-center hover:bg-white/10 transition-colors duration-300 group">
+      <div className="mb-4 p-3 rounded-full bg-white/5 group-hover:scale-110 transition-transform duration-300">{icon}</div>
+      <div className="text-3xl font-bold text-white mb-1">{formatNumber(value)}</div>
+      <div className="text-sm font-medium text-gray-300 mb-1">{label}</div>
+      <div className="text-xs text-gray-500">{subtext}</div>
     </div>
   );
 }
 
 function SkeletonStat() {
   return (
-    <div className="stat">
-      <div className="stat-figure">
-        <div className="skeleton h-8 w-8 rounded-full" />
-      </div>
-      <div className="stat-title">
-        <div className="skeleton h-3 w-28 rounded" />
-      </div>
-      <div className="stat-value">
-        <div className="skeleton h-7 w-20 rounded" />
-      </div>
+    <div className="glass-panel p-6 rounded-2xl flex flex-col items-center animate-pulse">
+      <div className="w-12 h-12 rounded-full bg-white/10 mb-4"></div>
+      <div className="h-8 w-24 bg-white/10 rounded mb-2"></div>
+      <div className="h-4 w-32 bg-white/10 rounded"></div>
     </div>
   );
 }

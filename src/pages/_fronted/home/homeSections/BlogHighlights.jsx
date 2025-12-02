@@ -1,13 +1,8 @@
-// src/pages/_fronted/blog/Blog.jsx
-// FIXED: Prevents infinite request loop with a correct useEffect dependency array.
-// Includes skeletons, error handling, and a professional layout.
-
 import { useEffect, useState } from "react";
-import { Link } from "react-router"; // Standard for modern React Router
+import { Link } from "react-router";
 import useAxiosPublic from "@/hooks/axiosPublic";
 
-export default function Blog() {
-  // Use a single state object to prevent UI flicker
+export default function BlogHighlights() {
   const [state, setState] = useState({
     loading: true,
     error: null,
@@ -21,12 +16,12 @@ export default function Blog() {
 
     const fetchPosts = async () => {
       try {
-        const { data } = await axiosPublic.get("/blogs"); // Your endpoint
+        const { data } = await axiosPublic.get("/blogs");
         if (active) {
-          // Filter for only published posts before setting state
           const publishedPosts = (Array.isArray(data) ? data : [])
             .filter(post => post.status === 'published')
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .slice(0, 3); // Only show top 3 on home
 
           setState({
             loading: false,
@@ -38,7 +33,7 @@ export default function Blog() {
         if (active) {
           setState({
             loading: false,
-            error: "Failed to load blog posts. Please try again later.",
+            error: "Failed to load blog posts.",
             posts: [],
           });
         }
@@ -46,131 +41,118 @@ export default function Blog() {
     };
 
     fetchPosts();
-
-    // Cleanup function to prevent state updates if the component unmounts
-    return () => {
-      active = false;
-    };
-  // ====================================================================
-  // THE FIX: Use an empty dependency array `[]`.
-  // This tells React to run this effect ONLY ONCE after the component mounts.
-  // ====================================================================
-  }, [axiosPublic]); // axiosPublic from a hook is stable, so this is safe.
+    return () => { active = false; };
+  }, [axiosPublic]);
 
   return (
-    <main className="w-full">
+    <section className="w-full py-20 relative">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
-        {/* Hero Header */}
-        <section className="w-full py-8 md:py-10 text-center">
-          <p className="text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+        <div className="text-center mb-12">
+          <span className="px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-400 text-xs font-bold uppercase tracking-wider">
             Insights & Stories
-          </p>
-          <h1 className="text-3xl md:text-4xl font-semibold">Our Blog</h1>
-          <p className="mt-1 text-neutral-600 dark:text-neutral-300">
+          </span>
+          <h2 className="mt-4 text-3xl md:text-5xl font-bold">
+            Latest from our <span className="text-gradient">Blog</span>
+          </h2>
+          <p className="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">
             Education, community stories, and updates from the BloodAid team.
           </p>
-        </section>
+        </div>
 
         {/* Blog Grid */}
-        <section className="w-full py-6">
+        <div className="w-full">
           {state.loading ? (
             <SkeletonGrid />
           ) : state.error ? (
-            <div className="alert alert-warning">
+            <div className="glass-panel p-6 rounded-xl text-center text-red-400 border border-red-500/30 bg-red-500/10">
               <span>{state.error}</span>
             </div>
           ) : state.posts.length > 0 ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {state.posts.map((post) => (
                 <BlogCard key={post._id} post={post} />
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-neutral-200/60 bg-white/80 p-8 text-center text-neutral-700 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-neutral-300">
+            <div className="glass-panel p-12 rounded-2xl text-center text-gray-400">
               No blog posts have been published yet. Please check back soon!
             </div>
           )}
-        </section>
+        </div>
+        
+        <div className="mt-12 text-center">
+            <Link to="/blog" className="btn-primary-gradient px-8 py-3 rounded-full font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all">
+                View All Posts
+            </Link>
+        </div>
       </div>
-    </main>
+    </section>
   );
 }
 
-/* -------------------- Card + UI pieces (same file) -------------------- */
-
 function BlogCard({ post }) {
   return (
-    <article className="card h-full bg-base-100 border border-base-300/40 shadow-lg transition-all hover:shadow-xl hover:-translate-y-1">
-      <figure>
-        <img
-          src={post.thumbnail || `https://daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg`}
-          alt={post.title}
-          className="h-48 w-full object-cover"
-        />
-      </figure>
-      <div className="card-body">
-        <div className="flex items-center gap-2 text-xs text-base-content/70">
-          {post.category && <span className="badge badge-primary">{post.category}</span>}
-          <span>{formatDate(post.createdAt)}</span>
-        </div>
-        <h3 className="card-title text-lg">
-          <Link to={`/blog/${post._id}`} className="link-hover">
-            {truncateText(post.title, 60)}
-          </Link>
-        </h3>
-        <p className="text-sm text-base-content/70">
-          {truncateText(stripHtml(post.content), 100)}
-        </p>
-        <div className="card-actions justify-end">
-          <Link to={`/blog/${post._id}`} className="btn btn-ghost btn-sm">
-            Read More
-          </Link>
+    <Link
+      to={`/blog/${post._id}`}
+      className="group glass-panel rounded-2xl overflow-hidden hover:bg-white/5 transition-all duration-300 flex flex-col h-full"
+    >
+      <div className="aspect-video w-full overflow-hidden bg-gray-800 relative">
+        {post.thumbnail ? (
+          <img
+            src={post.thumbnail}
+            alt={post.title}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-purple-900/50 to-pink-900/50 text-white/20">
+            <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
+        <div className="absolute bottom-4 left-4 right-4">
+            <span className="px-2 py-1 rounded bg-purple-500/80 text-white text-xs font-bold backdrop-blur-sm">
+                {new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+            </span>
         </div>
       </div>
-    </article>
+      
+      <div className="p-6 flex flex-col flex-grow">
+        <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 group-hover:text-purple-400 transition-colors">
+          {post.title}
+        </h3>
+        <div 
+            className="text-gray-400 text-sm line-clamp-3 mb-4 flex-grow"
+            dangerouslySetInnerHTML={{ __html: post.content?.substring(0, 150) + "..." }} 
+        />
+        <div className="flex items-center text-purple-400 text-sm font-medium mt-auto">
+            Read Article 
+            <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+        </div>
+      </div>
+    </Link>
   );
 }
 
 function SkeletonGrid() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="card bg-base-100 shadow-lg">
-          <div className="skeleton h-48 w-full"></div>
-          <div className="card-body">
-            <div className="skeleton h-4 w-28"></div>
-            <div className="skeleton h-6 w-full"></div>
-            <div className="skeleton h-4 w-full"></div>
-            <div className="skeleton h-4 w-3/4"></div>
-            <div className="card-actions justify-end">
-              <div className="skeleton h-8 w-24"></div>
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="glass-panel rounded-2xl overflow-hidden h-96 animate-pulse">
+          <div className="h-48 bg-white/5" />
+          <div className="p-6 space-y-4">
+            <div className="h-6 bg-white/5 rounded w-3/4" />
+            <div className="space-y-2">
+                <div className="h-4 bg-white/5 rounded w-full" />
+                <div className="h-4 bg-white/5 rounded w-full" />
+                <div className="h-4 bg-white/5 rounded w-2/3" />
             </div>
           </div>
         </div>
       ))}
     </div>
   );
-}
-
-/* ----------------------------- Helpers ----------------------------- */
-
-function formatDate(isoString) {
-  if (!isoString) return "";
-  return new Date(isoString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
-function truncateText(text = "", maxLength) {
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength) + "...";
-}
-
-function stripHtml(html) {
-  if (!html) return "";
-  // This is a simple client-side way to strip HTML. Be mindful of performance on very large texts.
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  return doc.body.textContent || "";
 }

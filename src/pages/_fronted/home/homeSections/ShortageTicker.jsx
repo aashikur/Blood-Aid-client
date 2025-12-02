@@ -1,4 +1,3 @@
-// src/features/home/components/ShortageTicker.jsx
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { getBloodShortageStats } from "@/services/publicAPI";
@@ -9,7 +8,7 @@ const LS_KEY = "bloodaid_ticker_dismissed_at";
 export default function ShortageTicker({
   endpoint = "/stats/shortage",
   maxItems = 8,
-  sticky = false, // set true if you want it to stick below navbar
+  sticky = false,
 }) {
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState([]);
@@ -25,11 +24,11 @@ export default function ShortageTicker({
           if (result.success) {
             setRows(Array.isArray(result.data) ? result.data : []);
           } else {
-            setRows(MOCK_SHORTAGE); // fallback
+            setRows(MOCK_SHORTAGE);
           }
         }
       } catch {
-        if (active) setRows(MOCK_SHORTAGE); // fallback
+        if (active) setRows(MOCK_SHORTAGE);
       } finally {
         if (active) setLoading(false);
       }
@@ -44,45 +43,46 @@ export default function ShortageTicker({
   return (
     <section
       className={[
-        "w-full",
-        sticky ? "sticky top-14 z-40" : "", // adjust top to your header height
+        "w-full py-4",
+        sticky ? "sticky top-20 z-40" : "",
       ].join(" ")}
       aria-label="Shortage ticker"
     >
       <div className="mx-auto max-w-7xl px-4 md:px-6">
-        <div className="relative overflow-hidden rounded-2xl border border-neutral-200/60 bg-white/80 shadow-[0_10px_30px_rgba(0,0,0,.06)] backdrop-blur dark:border-white/10 dark:bg-white/5 dark:shadow-[0_20px_60px_rgba(225,29,72,.12)]">
-          {/* subtle gradient glow */}
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_60%_at_90%_10%,rgba(255,77,103,0.20),transparent_60%)] dark:bg-[radial-gradient(80%_60%_at_90%_10%,rgba(255,77,103,0.15),transparent_60%)]" />
-
-          <div className="relative flex items-stretch gap-3 pl-3">
-            {/* Left label + CTA */}
-            <div className="hidden sm:flex items-center gap-2 py-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-white shadow">
-                <IconAlert />
+        <div className="relative overflow-hidden rounded-full glass-panel px-4 py-2 flex items-center gap-4">
+          
+          {/* Left label + CTA */}
+          <div className="hidden sm:flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 border border-red-500/30">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
               </span>
-              <span className="text-sm font-medium">Urgent now</span>
-              <span className="mx-2 h-5 w-px bg-neutral-300/60 dark:bg-white/20" />
-              <Link to="/urgent" className="btn btn-xs md:btn-sm btn-primary rounded-full">
-                View urgent
-              </Link>
+              <span className="text-xs font-bold text-red-400 uppercase tracking-wider">Urgent</span>
             </div>
-
-            {/* Ticker */}
-            <Ticker loading={loading} items={items} />
-
-            {/* Dismiss */}
-            <button
-              type="button"
-              aria-label="Dismiss"
-              className="ml-auto mr-1 my-1 rounded-full px-2 py-1 text-xs text-neutral-600 hover:bg-white/60 dark:text-neutral-300 dark:hover:bg-white/10"
-              onClick={() => {
-                localStorage.setItem(LS_KEY, new Date().toDateString());
-                setVisible(false);
-              }}
-            >
-              Dismiss
-            </button>
+            <Link to="/urgent" className="text-xs font-medium text-gray-300 hover:text-white transition-colors">
+              View All
+            </Link>
+            <div className="h-4 w-px bg-white/10"></div>
           </div>
+
+          {/* Ticker */}
+          <Ticker loading={loading} items={items} />
+
+          {/* Dismiss */}
+          <button
+            type="button"
+            aria-label="Dismiss"
+            className="ml-auto shrink-0 rounded-full p-1 text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+            onClick={() => {
+              localStorage.setItem(LS_KEY, new Date().toDateString());
+              setVisible(false);
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -103,9 +103,9 @@ function Ticker({ loading, items }) {
   if (loading) {
     return (
       <div className="flex-1 overflow-hidden">
-        <div className="flex items-center gap-2 py-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-7 w-40 rounded-full bg-neutral-200 dark:bg-white/10 animate-pulse" />
+        <div className="flex items-center gap-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-6 w-32 rounded-full bg-white/5 animate-pulse" />
           ))}
         </div>
       </div>
@@ -114,21 +114,20 @@ function Ticker({ loading, items }) {
 
   if (!items?.length) {
     return (
-      <div className="flex-1 py-2 text-sm text-neutral-600 dark:text-neutral-300">
+      <div className="flex-1 text-sm text-gray-400">
         No urgent shortages at the moment.
       </div>
     );
   }
 
-  // Duplicate list for seamless loop
   const loopItems = [...items, ...items];
 
   return (
-    <div className="relative flex-1 overflow-hidden">
+    <div className="relative flex-1 overflow-hidden mask-linear-fade">
       <div
-        className="flex min-w-max gap-2 py-2 pr-6"
+        className="flex min-w-max gap-3"
         style={{
-          animation: "ticker 24s linear infinite",
+          animation: "ticker 30s linear infinite",
         }}
         onMouseEnter={(e) => (e.currentTarget.style.animationPlayState = "paused")}
         onMouseLeave={(e) => (e.currentTarget.style.animationPlayState = "running")}
@@ -145,13 +144,12 @@ function Chip({ district, blood, score }) {
   return (
     <Link
       to={`/donation-requests?blood=${encodeURIComponent(blood)}&district=${encodeURIComponent(district)}&sort=urgency`}
-      className="group relative inline-flex items-center gap-2 rounded-full border border-rose-300/30 bg-rose-500/10 px-3 py-1.5 text-sm font-medium text-rose-700 shadow-sm hover:bg-rose-500/15 dark:border-rose-300/20 dark:bg-rose-500/15 dark:text-rose-200"
-      title={`View ${blood} requests in ${district}`}
+      className="group flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-3 py-1 text-xs font-medium text-gray-300 hover:bg-white/10 hover:border-purple-500/50 hover:text-white transition-all"
     >
-      <span className="inline-flex h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,.8)]" />
-      <span className="font-semibold">{blood}</span>
-      <span>· {district}</span>
-      <span className="ml-1 rounded-full bg-rose-500/20 px-2 py-0.5 text-xs text-rose-700 dark:text-rose-200">
+      <span className="font-bold text-red-400">{blood}</span>
+      <span className="text-gray-500">•</span>
+      <span>{district}</span>
+      <span className="ml-1 rounded-full bg-red-500/20 px-1.5 py-0.5 text-[10px] text-red-300">
         {score}
       </span>
     </Link>
@@ -161,7 +159,6 @@ function Chip({ district, blood, score }) {
 /* ----------------- Helpers ----------------- */
 
 function flattenShortages(rows, maxItems) {
-  // rows: [{ district, scores: { 'A+': 72, ... } }]
   const combos = [];
   for (const r of rows || []) {
     for (const bt of BLOOD_TYPES) {
@@ -180,15 +177,6 @@ function shouldHideToday() {
   } catch {
     return false;
   }
-}
-
-/* ----------------- Icons ----------------- */
-function IconAlert() {
-  return (
-    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
-      <path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-    </svg>
-  );
 }
 
 /* ----------------- Fallback demo data ----------------- */

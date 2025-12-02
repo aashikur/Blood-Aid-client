@@ -14,5 +14,34 @@
 }
 
 body {
-    @apply dark:bg-[#18122B]
+    @apply bg-[#0B0B15] text-white font-sans antialiased selection:bg-purple-500 selection:text-white;
+    background-image: 
+        radial-gradient(circle at 15% 50%, rgba(124, 58, 237, 0.08), transparent 25%), 
+        radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08), transparent 25%);
+    background-attachment: fixed;
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl;
+}
+
+.glass-nav {
+    @apply bg-[#0B0B15]/80 backdrop-blur-md border-b border-white/5;
+}
+
+.text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600;
+}
+
+.btn-primary-gradient {
+    @apply bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white border-none shadow-lg shadow-purple-500/20 transition-all duration-300;
+}
+
+.btn-secondary-outline {
+    @apply bg-transparent border border-white/20 hover:bg-white/10 text-white transition-all duration-300;
+}
+
+.card-hover {
+    @apply transition-all duration-300 hover:translate-y-[-5px] hover:shadow-purple-500/10 hover:border-purple-500/30;
 }

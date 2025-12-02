@@ -41,113 +41,79 @@ const Banner = () => {
     });
 };
   return (
-    <div  className="">
-     <section className="w-full z-10  flex justify-center   bg-gradient-to-br sm:rounded-b-[100px] rounded-b-[50px] from-pink-200 via-white to-pink-200 sm:py-30 py-15
-     dark:from-[#18122B] dark:via-[#393053] dark:to-[#18122B]
-    bg-[#ffd8de]
-    ">
-      <div className="max-w-6xl  w-full flex flex-col md:flex-row items-center justify-between px-12 ">
-        {/* Left Side */}
-        <div className="flex-1 flex flex-col items-start justify-between ">
-          {/* Lottie Icon */}
-          <div className="max-w-[400px] mx-auto md:mx-0 -mt-15">
-            <Lottie animationData={animation} loop={true} />
-          </div>
-          {/* Text & Buttons */}
-          <div className="text-center md:text-left -mt-10 sm:-mt-13">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-2">
-              Join as a <span className="text-[#c30027]">Donor</span>
-            </h1>
-            <p className="text-lg  text-[1rem]  sm:text-[1.125rem] text-gray-600/90 dark:text-gray-400 mb-8">
-              Be a hero. Your blood can save lives today.
-            </p>
-          { !user?.email ? (<div className="flex flex-col sm:flex-row  gap-4 justify-center md:justify-start">
-              <button
-                className="flex justify-center items-center gap-2 bg-gradient-to-tr from-red-800   to-red-400 text-white px-6 py-2 rounded-full font-semibold hover:bg-[#a80020] transition cursor-pointer"
-                onClick={() => navigate("/registration")}
-              >
-                <BiPlus /> Create Request
-              </button>
-              <button
-                className="flex justify-center items-center gap-2 border border-[#c30027] text-[#c30027] px-6 py-2 rounded-full hover:bg-[#FDEDF3] dark:bg-[#18122B] dark:text-white/70 dark:border-white dark:hover:bg-[#393053] transition cursor-pointer"
-                onClick={() => navigate("/search")}
-              >
-                <FaSearch /> Search a Donar
-              </button>
-            </div >): (
-              <div className="flex flex-col sm:flex-row  gap-4 justify-center md:justify-start">
-              <button
-                className="flex justify-center items-center gap-2 bg-gradient-to-tr from-red-800   to-red-400 text-white px-6 py-2 rounded-full font-semibold hover:bg-[#a80020] transition cursor-pointer"
-                onClick={() => navigate("/dashboard")}
-              >
-                <FaUserPlus /> Go to Dashboard
-              </button>
-              <button
-                className="flex dark:border-white/80 justify-center items-center gap-2 border border-[#c30027] text-[#c30027] px-6 py-2 rounded-full font-semibold hover:bg-[#FDEDF3] dark:bg-[#18122B] dark:text-white  dark:hover:bg-[#393053] transition cursor-pointer"
-                onClick={() => navigate("/search")}
-              >
-                <FaSearch /> Search a Donar
-              </button>
-            </div >
-            )}
-          </div>
+    <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-purple-600/20 rounded-full blur-[120px] -z-10"></div>
+      <div className="absolute bottom-0 right-0 w-[800px] h-[600px] bg-pink-600/10 rounded-full blur-[100px] -z-10"></div>
+
+      <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center z-10">
+        
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-8 animate-fade-in-up">
+          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+          <span className="text-sm font-medium text-gray-300">AI-Powered Blood Donation Platform</span>
         </div>
-        {/* Right Side: Registration CTA Form */}
-        <div className="flex-1 flex justify-center items-center md:justify-end md:mt-0 hidden md:flex">
-          <div className="w-full max-w-md bg-white dark:bg-[#18122B] rounded-3xl shadow-lg p-8 flex flex-col items-center">
-            <div className="flex items-center gap-2 mb-4">
-              <FaUserPlus className="text-[#c30027] text-2xl" />
-              <span className="text-lg text-gray-600">
-                {user?.email ? "Registration Completed" : "Registration"}
-              </span>
-            </div>
-            {/* <ShinyButton/> */}
-            <button
-            
-              className="w-full cursor-pointer flex items-center justify-center gap-2 bg-gradient-to-tr  from-red-800 to-red-400  text-white py-3 rounded-full font-semibold text-lg hover:bg-[#a80020] transition mb-4"
-              onClick={() => navigate(`${user?.email ? "/dashboard" : "/registration"}`)}
-            >
-              <FaEnvelope /> 
-              {
-                user?.email ? "Go to Dashboard" : "Register with Email "
-              }
-              <FaArrowRight className="ml-2" />
-            </button>
-            <div className="flex items-center w-full my-3">
-              <div className="flex-1 h-px bg-gray-200"></div>
-              <span className="mx-2 text-gray-400 text-sm">OR</span>
-              <div className="flex-1 h-px bg-gray-200"></div>
-            </div>
-            
-            <div className="flex gap-4 w-full justify-center mb-4">
-              <button onClick={handleGoogle } className="flex items-center justify-center w-12 h-12 rounded-full border border-gray-200 hover:bg-gray-100 transition">
-                <FcGoogle className="text-2xl" />
-              </button>
-              <button className="flex items-center justify-center w-12 h-12 rounded-full border border-gray-200 hover:bg-gray-100 transition">
-                <BsApple className="text-2xl" />
-              </button>
-            </div>
-            <div className="w-full text-center mb-2">
-              <span className="text-gray-500 text-sm">Already have an account?</span>
-              <button
-                className="block w-full text-[#c30027] dark:text-white/50 mt-1 "
-              >
-                Be a hero. Your blood can save lives today
-              </button>
-            </div>
-            <button
-            disabled={user?.email ? true : false}
-              className="w-full mt-5 py-3 cursor-pointer flex items-center justify-center rounded-full dark:text-white/80 hover:dark:text-red-800 dark:border-white/60 border-2 border-[#c30027] text-[#c30027] font-semibold hover:bg-[#FDEDF3] transition"
-              onClick={() => navigate(`${user?.email ? "/dashboard" : "/login"}`)}
-            >
-              {!user?.email && 'Continue with BloodAid Account'} <FaArrowRight className="ml-2" />  
-            </button>
-          </div>
+
+        {/* Headline */}
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-tight animate-fade-in-up delay-100">
+          The Intelligent Platform for <br />
+          <span className="text-gradient">Saving Lives</span>
+        </h1>
+
+        {/* Subheadline */}
+        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mb-10 animate-fade-in-up delay-200">
+          Elevate your donation experience with real-time matching, community insights, and seamless coordination.
+        </p>
+
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in-up delay-300">
+          <button
+            onClick={() => navigate("/registration")}
+            className="btn-primary-gradient px-8 py-4 rounded-full font-semibold text-lg flex items-center gap-2 group"
+          >
+            Get Started <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+          </button>
+          <button
+            onClick={() => navigate("/search")}
+            className="btn-secondary-outline px-8 py-4 rounded-full font-semibold text-lg flex items-center gap-2"
+          >
+            <FaSearch /> Find Donors
+          </button>
         </div>
+
+        {/* Visual / Lottie */}
+        <div className="mt-16 w-full max-w-4xl glass-panel rounded-2xl p-4 animate-fade-in-up delay-500 relative">
+           <div className="absolute inset-0 bg-gradient-to-t from-[#0B0B15] via-transparent to-transparent z-10"></div>
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+              <div className="col-span-1 hidden md:block p-4">
+                  <div className="glass-panel p-4 rounded-xl mb-4">
+                      <div className="h-2 w-20 bg-gray-700 rounded mb-2"></div>
+                      <div className="h-2 w-32 bg-gray-600 rounded"></div>
+                  </div>
+                  <div className="glass-panel p-4 rounded-xl">
+                      <div className="h-2 w-24 bg-gray-700 rounded mb-2"></div>
+                      <div className="h-2 w-16 bg-gray-600 rounded"></div>
+                  </div>
+              </div>
+              <div className="col-span-1 md:col-span-1 flex justify-center">
+                  <div className="w-64 h-64">
+                    <Lottie animationData={animation} loop={true} />
+                  </div>
+              </div>
+              <div className="col-span-1 hidden md:block p-4">
+                  <div className="glass-panel p-4 rounded-xl mb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                          <div className="w-8 h-8 rounded-full bg-purple-500/20"></div>
+                          <div className="h-2 w-20 bg-gray-700 rounded"></div>
+                      </div>
+                      <div className="h-2 w-full bg-gray-600 rounded"></div>
+                  </div>
+              </div>
+           </div>
+        </div>
+
       </div>
     </section>
-    </div>
   );
 };
-
 export default Banner;

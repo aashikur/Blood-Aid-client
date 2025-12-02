@@ -1,31 +1,32 @@
-// src/features/home/components/SafetyEligibility.jsx
-// Home section: Safety & Eligibility
-// - Purpose: Build confidence and reduce fear with clear, actionable tips.
-// - Content: Mini-cards for key requirements and aftercare.
-
 import { Link } from "react-router";
 
 const SAFETY_TIPS = [
   {
-    icon: "✅",
+    icon: "📋",
     title: "Eligibility Checklist",
     text: "Must be 18-65, weigh over 50kg, and be in good health.",
     ctaText: "Full Checklist",
     ctaLink: "/eligibility",
+    color: "from-blue-500/20 to-cyan-500/20",
+    borderColor: "border-blue-500/30",
   },
   {
     icon: "💧",
     title: "Hydrate Well",
     text: "Drink plenty of water before and after your donation.",
     ctaText: "Learn More",
-    ctaLink: "/blog/donation-preparation", // Example link
+    ctaLink: "/blog/donation-preparation",
+    color: "from-cyan-500/20 to-teal-500/20",
+    borderColor: "border-cyan-500/30",
   },
   {
     icon: "🍎",
     title: "Eat a Healthy Meal",
     text: "Have a nutritious meal a few hours before donating.",
     ctaText: "See Tips",
-    ctaLink: "/blog/donation-preparation", // Example link
+    ctaLink: "/blog/donation-preparation",
+    color: "from-green-500/20 to-emerald-500/20",
+    borderColor: "border-green-500/30",
   },
   {
     icon: "🆔",
@@ -33,48 +34,59 @@ const SAFETY_TIPS = [
     text: "A valid photo ID is required to verify your identity.",
     ctaText: "Why?",
     ctaLink: "/faq",
+    color: "from-purple-500/20 to-pink-500/20",
+    borderColor: "border-purple-500/30",
   },
 ];
 
 export default function SafetyEligibility() {
   return (
-    <section className="w-full py-8 md:py-10 bg-base-200/50 dark:bg-base-300/20">
+    <section className="w-full py-20 relative">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
-        <div className="mb-4 text-center">
-          <p className="text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+        <div className="mb-12 text-center">
+          <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold uppercase tracking-wider">
             Your Health First
-          </p>
-          <h2 className="text-2xl md:text-3xl font-semibold">
-            Safety & Eligibility
+          </span>
+          <h2 className="mt-4 text-3xl md:text-5xl font-bold">
+            Safety & <span className="text-gradient">Eligibility</span>
           </h2>
-          <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
-            We prioritize your well-being. Here’s what you need to know.
+          <p className="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">
+            We prioritize your well-being. Here’s what you need to know before you donate.
           </p>
         </div>
 
-        {/* Mini-Cards */}
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {SAFETY_TIPS.map((tip) => (
             <div
               key={tip.title}
-              className="card h-full bg-base-100 border border-base-300/40 shadow-lg text-center"
+              className={`glass-panel p-6 rounded-2xl border ${tip.borderColor} hover:bg-white/5 transition-all duration-300 group`}
             >
-              <div className="card-body">
-                <div className="mx-auto text-4xl">{tip.icon}</div>
-                <h3 className="card-title justify-center">{tip.title}</h3>
-                <p className="text-sm text-base-content/70">{tip.text}</p>
-                <div className="card-actions justify-center pt-2">
-                   <Link to={tip.ctaLink} className="btn btn-ghost btn-sm">
-                      {tip.ctaText}
-                   </Link>
-                </div>
+              <div className={`w-16 h-16 mx-auto rounded-full bg-gradient-to-br ${tip.color} flex items-center justify-center text-3xl mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                {tip.icon}
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2 text-center">{tip.title}</h3>
+              <p className="text-sm text-gray-400 text-center mb-6 leading-relaxed">{tip.text}</p>
+              <div className="text-center">
+                 <Link 
+                  to={tip.ctaLink} 
+                  className="inline-flex items-center text-sm font-medium text-white/70 hover:text-white transition-colors"
+                >
+                    {tip.ctaText}
+                    <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                 </Link>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="mt-6 text-center">
-          <Link to="/eligibility" className="btn btn-primary">
+        <div className="mt-12 text-center">
+          <Link 
+            to="/eligibility" 
+            className="btn-primary-gradient px-8 py-3 rounded-full font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all"
+          >
             Take the Quick Eligibility Quiz
           </Link>
         </div>

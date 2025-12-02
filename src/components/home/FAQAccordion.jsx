@@ -1,101 +1,92 @@
 import { useState } from "react";
-import { BsArrowRight } from "react-icons/bs";
-import { FaRegSmileBeam } from "react-icons/fa"; // Demo icon
+import { motion, AnimatePresence } from "framer-motion";
 
 const faqs = [
   {
-    question: "Is the blood donation process painful?",
-    answer:
-      "You may feel a slight pinch, but most donors experience little or no pain. If you need extra support, you can bring a friend or family member with you.",
+    question: "Who can donate blood?",
+    answer: "Most healthy adults aged 18-65 who weigh at least 50kg can donate blood. You should be in good health and not have donated in the last 3-4 months.",
   },
   {
-    question: "What if I am afraid of needles?",
-    answer:
-      "It's normal to feel nervous! Our staff are trained to make you comfortable and support you throughout the process.",
+    question: "Is blood donation safe?",
+    answer: "Yes, it is completely safe. We use sterile, disposable equipment for every donation. There is zero risk of contracting any disease.",
   },
   {
-    question: "How do I know if I can donate?",
-    answer:
-      "You can check our eligibility guidelines or contact us for a quick assessment before donating.",
+    question: "How long does it take?",
+    answer: "The actual donation takes about 10-15 minutes. The entire process, including registration and screening, takes about 45-60 minutes.",
   },
   {
-    question: "Will I need blood after donating?",
-    answer:
-      "No, your body quickly replaces the donated blood. You may rest and drink fluids after donation.",
+    question: "How often can I donate?",
+    answer: "Men can donate every 3 months, and women every 4 months. Platelet donation can be done more frequently, up to 24 times a year.",
   },
   {
-    question: "How often can I donate blood?",
-    answer:
-      "You can donate whole blood every 3-4 months. For plasma or platelets, the interval is shorter.",
+    question: "What should I do before donating?",
+    answer: "Eat a healthy meal, drink plenty of water, and get a good night's sleep. Avoid alcohol and smoking before donation.",
   },
 ];
 
-export default function FAQWithCharacter() {
-  const [openIdx, setOpenIdx] = useState(0);
+export default function FAQAccordion() {
+  const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <div className="relative dark:bg-[#393053] py-12 px-4 md:px-6 lg:px-8 rounded-[40px] w-full sm:rounded-[60px] lg:rounded-[100px]  mx-auto my-12">
-      <div className="flex max-w-[1500px] mx-auto flex-col md:flex-row items-center gap-10">
-        {/* Left: Accordion */}
-        <div className="w-full md:w-1/2 z-10">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-left text-[#c30027] mb-8">
-            Still have <span className="text-black dark:text-white">questions?</span>
+    <section className="py-24 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px] -z-10" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-[100px] -z-10" />
+
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6">
+            Frequently Asked <span className="text-gradient">Questions</span>
           </h2>
-          <div className="flex flex-col gap-4 text-[0.9rem]">
-            {faqs.map((faq, idx) => (
-              <div
-                key={idx}
-                className={`rounded-xl transition shadow bg-white dark:bg-[#18122B] ${
-                  openIdx === idx
-                    ? "border-2 border-[#fcacbc] dark:border-gray-800"
-                    : "border border-gray-200 dark:border-gray-700"
-                }`}
-              >
-                <button
-                  className="w-full flex justify-between items-center px-5 py-4 font-semibold text-left text-[#c30027] dark:text-white focus:outline-none"
-                  onClick={() => setOpenIdx(openIdx === idx ? -1 : idx)}
-                >
-                  <span>{faq.question}</span>
-                  <span className="text-2xl text-[#b9b9b9]">
-                    {openIdx === idx ? "−" : "+"}
-                  </span>
-                </button>
-                {openIdx === idx && (
-                  <div className="px-5 pb-4 text-gray-700 dark:text-[#a3a3a3] text-sm">
-                    {faq.answer}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          <p className="text-gray-400 max-w-2xl mx-auto text-lg">
+            Everything you need to know about blood donation. Can't find the answer you're looking for? Contact our support team.
+          </p>
+        </div>
 
-          <div className="flex justify-start mt-8">
-            <button
-              className="px-6 py-2 flex items-center gap-3 rounded-full bg-[#c30027] text-white font-semibold hover:bg-red-700 transition"
-              onClick={() => (window.location.href = "/contact")}
+        <div className="max-w-3xl mx-auto space-y-4">
+          {faqs.map((faq, index) => (
+            <div
+              key={index}
+              className={`glass-panel rounded-2xl overflow-hidden transition-all duration-300 ${
+                openIndex === index ? "border-purple-500/30 bg-purple-500/5" : "hover:bg-white/5"
+              }`}
             >
-              Have some Questions? <BsArrowRight />
-            </button>
-          </div>
+              <button
+                onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
+                className="w-full px-6 py-4 flex items-center justify-between text-left"
+              >
+                <span className={`text-lg font-medium transition-colors ${
+                  openIndex === index ? "text-white" : "text-gray-300"
+                }`}>
+                  {faq.question}
+                </span>
+                <span className={`ml-4 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  openIndex === index ? "bg-purple-500 text-white rotate-180" : "bg-white/10 text-gray-400"
+                }`}>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              </button>
+              
+              <AnimatePresence>
+                {openIndex === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/5 pt-4">
+                      {faq.answer}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
         </div>
-
-        {/* Right: Character image (hidden on mobile) */}
-        <div className="hidden opacity-70 md:flex justify-center w-full md:w-1/2 z-10">
-          <img className="max-w-80" src="/logo/faq-1.png" alt="FAQ Character" />
-        </div>
-
-        {/* Watermark-style background logo */}
-        <img
-          src="/logo/faq-5.png"
-          className="absolute max-w-30 inline-block sm:hidden  sm:max-w-96 opacity-10 top-0 right-0 sm:left-0 z-0  sm:bottom-0"
-          alt="Background Logo"
-        />
-                <img
-          src="/logo/faq-5.png"
-          className="absolute max-w-30 hidden sm:inline-block  sm:max-w-96 opacity-10 bottom-0 left-0"
-          alt="Background Logo"
-        />
       </div>
-    </div>
+    </section>
   );
 }
