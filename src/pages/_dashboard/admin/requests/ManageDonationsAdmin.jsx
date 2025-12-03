@@ -74,7 +74,7 @@ const ManageDonationsAdmin = () => {
         color: "#fff",
         confirmButtonColor: "#9333ea",
         timer: 1500,
-        showConfirmButton: false,
+        showConfirmButton: false
       });
     } catch (error) {
       console.error(error);
@@ -218,11 +218,11 @@ const ManageDonationsAdmin = () => {
                       </td>
 
                       <td className="p-4 text-right">
-                        <div className="dropdown dropdown-end  dropdown-left">
+                        <div className="dropdown dropdown-end dropdown-left">
                           <button tabIndex={0} className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-all">
                             <FaEllipsisV size={14} />
                           </button>
-                          <ul tabIndex={0} className="dropdown-content z-[50] menu p-2 shadow-xl shadow-black/50 bg-[#1A1A2E] border border-white/10 rounded-xl w-48 text-sm mt-2 translate-y-6">
+                          <ul tabIndex={0} className="dropdown-content z-[50] menu p-2 shadow-xl shadow-black/50 bg-[#1A1A2E] border border-white/10 rounded-xl w-48 text-sm mt-2">
                             <li>
                               <button 
                                 onClick={() => navigate(`/dashboard/donation-request-details/${donation._id}`)}
@@ -264,50 +264,14 @@ const ManageDonationsAdmin = () => {
             </table>
           </div>
         )}
-
-        {/* Pagination */}
-        <div className="flex flex-col md:flex-row items-center justify-between p-4 text-sm text-gray-400">
-          <div>
-            Showing{" "}
-            <span className="font-medium text-white">
-              {(currentPage - 1) * itemsPerPage + 1} -{" "}
-              {Math.min(currentPage * itemsPerPage, filteredDonations.length)}{" "}
-            </span>
-            of{" "}
-            <span className="font-medium text-white">{filteredDonations.length}</span>
-          </div>
-          <div className="flex gap-2 mt-2 md:mt-0">
-            <button
-              onClick={() => setCurrentPage(1)}
-              disabled={currentPage === 1}
-              className="px-3 py-1 rounded-md bg-purple-600 text-white font-semibold disabled:opacity-50"
-            >
-              First
-            </button>
-            <button
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-3 py-1 rounded-md bg-purple-600 text-white font-semibold disabled:opacity-50"
-            >
-              Prev
-            </button>
-            <button
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 rounded-md bg-purple-600 text-white font-semibold disabled:opacity-50"
-            >
-              Next
-            </button>
-            <button
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 rounded-md bg-purple-600 text-white font-semibold disabled:opacity-50"
-            >
-              Last
-            </button>
-          </div>
-        </div>
       </div>
+
+      {/* Pagination */}
+      <Pagination 
+        currentPage={currentPage} 
+        totalPages={totalPages} 
+        onPageChange={setCurrentPage} 
+      />
     </div>
   );
 };
