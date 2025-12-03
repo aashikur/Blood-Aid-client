@@ -5,6 +5,7 @@ import ShortageTicker from "./homeSections/ShortageTicker";
 import BlogHighlights from "./homeSections/BlogHighlights";
 import LiveImpact from "./homeSections/LiveImpact";
 import SafetyEligibility from "./homeSections/SafetyEligibility";
+import Home2 from "@/components/Home2";
 
 const Home = () => {
   return (
@@ -16,6 +17,7 @@ const Home = () => {
       <BlogHighlights />
       <FAQAccordion />
       <ContactUs />
+      {/* <Home2/> */}
     </>
   );
 };

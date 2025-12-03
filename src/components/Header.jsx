@@ -2,6 +2,7 @@ import { Link, NavLink } from "react-router";
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "@/providers/AuthProvider";
 import { FaBars, FaTimes } from "react-icons/fa";
+import { Droplet } from "lucide-react";
 
 const navItems = [
   { name: "Home", path: "/" },
@@ -34,13 +35,12 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="relative w-8 h-8">
-             <img src="/logo/icon-2.png" alt="BloodAid" className="w-full h-full object-contain" />
-             <div className="absolute inset-0 bg-purple-500 blur-lg opacity-20 group-hover:opacity-40 transition-opacity"></div>
+        <div className="flex items-center gap-2">
+          <div className="bg-gradient-to-br from-purple-600 to-pink-600 p-2 rounded-lg">
+            <Droplet className="text-white fill-white" size={24} />
           </div>
-          <span className="text-2xl font-bold tracking-tight text-white">
-            Blood<span className="text-gradient">Aid</span>
-          </span>
+          <span className="text-2xl font-bold text-white">Blood<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">Aid</span></span>
+        </div>
         </Link>
 
         {/* Desktop Navigation */}

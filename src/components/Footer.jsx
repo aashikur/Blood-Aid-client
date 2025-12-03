@@ -1,3 +1,4 @@
+import { Droplet } from "lucide-react";
 import { Link } from "react-router";
 
 const Footer = () => (
@@ -11,10 +12,12 @@ const Footer = () => (
         {/* Brand */}
         <div className="space-y-4">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/logo/icon-2.png" alt="BloodAid Logo" className="h-10 w-auto" />
-            <span className="text-2xl font-bold text-white">
-              Blood<span className="text-gradient">Aid</span>
-            </span>
+        <div className="flex items-center gap-2">
+          <div className="bg-gradient-to-br from-purple-600 to-pink-600 p-2 rounded-lg">
+            <Droplet className="text-white fill-white" size={24} />
+          </div>
+          <span className="text-2xl font-bold text-white">Blood<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">Aid</span></span>
+        </div>
           </Link>
           <p className="text-gray-400 text-sm leading-relaxed">
             Connecting donors with those in need. Join our community to save lives and make a difference today.
