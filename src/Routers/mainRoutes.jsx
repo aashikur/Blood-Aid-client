@@ -175,6 +175,3 @@ const mainRoutes = createBrowserRouter([
 ]);
 
 export default mainRoutes;
-
-
-

@@ -1,226 +1,311 @@
-import useAxiosPublic from '@/hooks/axiosPublic';
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from 'react-router';
 import Swal from 'sweetalert2';
-import Loading from '@/pages/_fronted/home/Loading';
+import { FaEllipsisV, FaEye, FaEdit, FaTrash, FaTint, FaHospital } from 'react-icons/fa';
 
-
-const BLOOD_GROUPS = ['All', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-const STATUSES = ['All', 'pending', 'approved', 'rejected'];
-const ITEMS_PER_PAGE = 10;
-
-const ActionMenu = ({ onView, onEdit, onDelete }) => {
-  const [open, setOpen] = React.useState(false);
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-      >
-        <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-          <circle cx="5" cy="12" r="2" fill="currentColor" />
-          <circle cx="12" cy="12" r="2" fill="currentColor" />
-          <circle cx="19" cy="12" r="2" fill="currentColor" />
-        </svg>
-      </button>
-      {open && (
-        <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 border dark:border-gray-600 rounded shadow-lg z-10">
-          <button onClick={onView} className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">View</button>
-          <button onClick={onEdit} className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Edit</button>
-          <button onClick={onDelete} className="block w-full text-left px-4 py-2 text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700">Delete</button>
-        </div>
-      )}
-    </div>
-  );
-};
+import useAxiosSecure from '@/hooks/useAxiosSecure';
+import FilterBar from '@/components/dashboard/shared/FilterBar';
+import Pagination from '@/components/dashboard/shared/Pagination';
 
 const ManageDonationsAdmin = () => {
-  const axiosPublic = useAxiosPublic();
-  const [donations, setDonations] = React.useState([]);
-  const [search, setSearch] = React.useState('');
-  const [bloodFilter, setBloodFilter] = React.useState('All');
-  const [statusFilter, setStatusFilter] = React.useState('All');
-  const [page, setPage] = React.useState(1);
-  const [loading, setLoading] = React.useState(true);
+  const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
+  
+  // --- State ---
+  const [searchTerm, setSearchTerm] = useState('');
+  const [bloodFilter, setBloodFilter] = useState('All');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
-  useQuery({
-    queryKey: ["donationRequests"],
+  // --- Data Fetching ---
+  const { data: donations = [], isLoading, refetch } = useQuery({
+    queryKey: ["all-donation-requests-admin"],
     queryFn: async () => {
-      const res = await axiosPublic.get('public-donation-requests');
-      setDonations(res.data);
-      setLoading(false);
+      const res = await axiosSecure.get('/all-donation-requests'); // Assuming admin endpoint exists, or use public
       return res.data;
     },
   });
 
+  // --- Handlers ---
   const handleDelete = (id) => {
-  Swal.fire({
-    title: "Are you sure?",
-    text: "Delete this donation request?",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#c30027",
-    cancelButtonColor: "#aaa",
-    confirmButtonText: "Yes, delete!",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      axiosPublic.delete(`/donation-request/${id}`).then(() => {
-        Swal.fire("Deleted!", "Donation request deleted.", "success");
-        // Optionally refetch data (if using React Query)
-        // queryClient.invalidateQueries(["donationRequests"]);
-        // Or, remove from state if using useState
-        setDonations((prev) => prev.filter((d) => d._id !== id));
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      background: "#131320",
+      color: "#fff",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await axiosSecure.delete(`/donation-request/${id}`);
+          if (res.data.deletedCount > 0) {
+            refetch();
+            Swal.fire({
+              title: "Deleted!",
+              text: "The request has been deleted.",
+              icon: "success",
+              background: "#131320",
+              color: "#fff",
+              confirmButtonColor: "#9333ea"
+            });
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    });
+  };
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await axiosSecure.patch(`/donation-request-status/${id}`, { status: newStatus });
+      refetch();
+      Swal.fire({
+        title: "Updated",
+        text: `Status changed to ${newStatus}`,
+        icon: "success",
+        background: "#131320",
+        color: "#fff",
+        confirmButtonColor: "#9333ea",
+        timer: 1500,
+        showConfirmButton: false,
       });
+    } catch (error) {
+      console.error(error);
     }
-  });
-};
+  };
 
-  const filtered = donations.filter(donation => {
-    const searchText = search.toLowerCase();
+  // --- Filtering Logic ---
+  const filteredDonations = useMemo(() => {
+    return donations.filter(donation => {
+      const searchText = searchTerm.toLowerCase();
+      const matchesSearch =
+        donation.requesterName?.toLowerCase().includes(searchText) ||
+        donation.recipientName?.toLowerCase().includes(searchText) ||
+        donation.recipientDistrict?.toLowerCase().includes(searchText);
 
-    const matchesSearch =
-      donation.requesterName.toLowerCase().includes(searchText) ||
-      donation.bloodGroup.toLowerCase().includes(searchText) ||
-      donation.requesterEmail.toLowerCase().includes(searchText) ||
-      donation.recipientDistrict.toLowerCase().includes(searchText) ||
-      donation.recipientUpazila.toLowerCase().includes(searchText);
+      const matchesBlood = bloodFilter === 'All' || donation.bloodGroup === bloodFilter;
+      const matchesStatus = statusFilter === 'All' || donation.donationStatus === statusFilter;
 
-    const matchesBlood = bloodFilter === 'All' || donation.bloodGroup === bloodFilter;
-    const matchesStatus = statusFilter === 'All' || donation.donationStatus === statusFilter;
+      return matchesSearch && matchesBlood && matchesStatus;
+    });
+  }, [donations, searchTerm, bloodFilter, statusFilter]);
 
-    return matchesSearch && matchesBlood && matchesStatus;
-  });
+  // --- Pagination Logic ---
+  const paginatedDonations = filteredDonations.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  const totalPages = Math.ceil(filteredDonations.length / itemsPerPage);
 
-  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
-  const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  // --- Configuration ---
+  const statusColors = {
+    pending: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
+    inprogress: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+    done: "bg-green-500/10 text-green-500 border-green-500/20",
+    canceled: "bg-red-500/10 text-red-500 border-red-500/20",
+  };
 
-  React.useEffect(() => {
-    setPage(1);
-  }, [search, bloodFilter, statusFilter]);
+  const filterOptions = [
+    {
+      value: bloodFilter,
+      onChange: (e) => setBloodFilter(e.target.value),
+      options: [
+        { value: "All", label: "All Blood Groups" },
+        { value: "A+", label: "A+" }, { value: "A-", label: "A-" },
+        { value: "B+", label: "B+" }, { value: "B-", label: "B-" },
+        { value: "AB+", label: "AB+" }, { value: "AB-", label: "AB-" },
+        { value: "O+", label: "O+" }, { value: "O-", label: "O-" },
+      ]
+    },
+    {
+      value: statusFilter,
+      onChange: (e) => setStatusFilter(e.target.value),
+      options: [
+        { value: "All", label: "All Status" },
+        { value: "pending", label: "Pending" },
+        { value: "inprogress", label: "In Progress" },
+        { value: "done", label: "Done" },
+        { value: "canceled", label: "Canceled" },
+      ]
+    }
+  ];
 
-  if (loading) return <Loading></Loading>
   return (
-    <div className="p-6 md:p-8">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
-        Manage Donations from All Requests ({donations.length})
-      </h2>
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-white">Manage Donations : {filteredDonations.length} </h1>
+        <p className="text-gray-400 text-sm">Oversee all blood donation requests across the platform.</p>
+      </div>
 
       {/* Filters */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6">
-        <input
-          type="text"
-          placeholder="Search name, blood group, email, area..."
-          className="w-full md:w-1/3 px-3 py-2 border rounded focus:outline-none focus:ring dark:bg-gray-900 dark:border-gray-700 dark:text-white"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
+      <FilterBar 
+        searchTerm={searchTerm}
+        onSearch={(e) => setSearchTerm(e.target.value)}
+        filters={filterOptions}
+      />
 
-        <div className="flex gap-2 w-full md:w-auto">
-          <select
-            className="px-3 py-2 border rounded focus:outline-none focus:ring dark:bg-gray-900 dark:border-gray-700 dark:text-white"
-            value={bloodFilter}
-            onChange={e => setBloodFilter(e.target.value)}
-          >
-            {BLOOD_GROUPS.map(bg => (
-              <option key={bg} value={bg}>{bg}</option>
-            ))}
-          </select>
+      {/* Table Container */}
+      <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm">
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <span className="loading loading-spinner loading-lg text-purple-500"></span>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-white/5 border-b border-white/10 text-xs uppercase tracking-wider text-gray-400">
+                  <th className="p-4 font-medium">Requester</th>
+                  <th className="p-4 font-medium">Recipient Info</th>
+                  <th className="p-4 font-medium">Blood Group</th>
+                  <th className="p-4 font-medium">Date & Time</th>
+                  <th className="p-4 font-medium">Status</th>
+                  <th className="p-4 font-medium text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm">
+                {paginatedDonations.length > 0 ? (
+                  paginatedDonations.map((donation) => (
+                    <tr key={donation._id} className="group border-b border-white/5 hover:bg-white/5 transition-colors">
+                      <td className="p-4">
+                        <div className="font-medium text-white">{donation.requesterName}</div>
+                        <div className="text-xs text-gray-500">{donation.requesterEmail}</div>
+                      </td>
+                      
+                      <td className="p-4">
+                        <div className="font-medium text-white">{donation.recipientName}</div>
+                        <div className="text-xs text-gray-500 flex items-center gap-1">
+                           {donation.recipientDistrict}, {donation.recipientUpazila}
+                        </div>
+                        <div className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                           <FaHospital size={10} /> {donation.hospitalName}
+                        </div>
+                      </td>
 
-          <select
-            className="px-3 py-2 border rounded focus:outline-none focus:ring dark:bg-gray-900 dark:border-gray-700 dark:text-white"
-            value={statusFilter}
-            onChange={e => setStatusFilter(e.target.value)}
-          >
-            {STATUSES.map(status => (
-              <option key={status} value={status}>{status}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-500/20 text-red-400 font-bold text-xs border border-red-500/30">
+                            {donation.bloodGroup}
+                          </span>
+                        </div>
+                      </td>
 
-      {/* Table */}
-      <div className="overflow-x-auto bg-white dark:bg-gray-900 rounded-lg shadow-md">
-        <table className="min-w-full text-sm">
-          <thead>
-            <tr className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-              <th className="px-4 py-3 text-left">Requester</th>
-              <th className="px-4 py-3 text-left">Recipient</th>
-              <th className="px-4 py-3 text-left">Blood Group</th>
-              <th className="px-4 py-3 text-left">Date</th>
-              <th className="px-4 py-3 text-left">Time</th>
-              <th className="px-4 py-3 text-left">Hospital</th>
-              <th className="px-4 py-3 text-left">Status</th>
-              <th className="px-4 py-3 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginated.length === 0 ? (
-              <tr>
-                <td colSpan={8} className="text-center py-8 text-gray-400">No donations found.</td>
-              </tr>
-            ) : paginated.map(donation => (
-              <tr key={donation._id} className="border-b dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800">
-                <td className="px-4 py-3">{donation.requesterName}</td>
-                <td className="px-4 py-3">
-                  <div>
-                    <div className="font-medium">{donation.recipientName}</div>
-                    <div className="text-xs text-gray-500">{donation.recipientDistrict}, {donation.recipientUpazila}</div>
-                  </div>
-                </td>
-                <td className="px-4 py-3">{donation.bloodGroup}</td>
-                <td className="px-4 py-3">{donation.donationDate}</td>
-                <td className="px-4 py-3">{donation.donationTime}</td>
-                <td className="px-4 py-3">{donation.hospitalName}</td>
-                <td className="px-4 py-3">
-                  <span className={`px-2 py-1 rounded text-xs font-semibold
-                    ${donation.donationStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                      donation.donationStatus === 'approved' ? 'bg-green-100 text-green-800' :
-                        'bg-red-100 text-red-800'}`}>
-                    {donation.donationStatus}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <ActionMenu
-                    onView={() =>Swal.fire("Coming soon")}
-                    onEdit={() => Swal.fire("Coming soon")}
-                    onDelete={() => handleDelete(donation._id)}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                      <td className="p-4 text-gray-400">
+                        <div className="text-white">{donation.donationDate}</div>
+                        <div className="text-xs opacity-70">{donation.donationTime}</div>
+                      </td>
 
-      {/* Pagination */}
-      <div className="flex justify-between items-center mt-6 text-sm text-gray-600 dark:text-gray-400">
-        <div>
-          Showing {(page - 1) * ITEMS_PER_PAGE + 1} - {Math.min(page * ITEMS_PER_PAGE, filtered.length)} of {filtered.length}
-        </div>
-        <div className="flex gap-2">
-          <button
-            className="px-3 py-1 border rounded disabled:opacity-50 dark:border-gray-600"
-            onClick={() => setPage(page - 1)}
-            disabled={page === 1}
-          >
-            Prev
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => (
+                      <td className="p-4">
+                        <select
+                          value={donation.donationStatus}
+                          onChange={(e) => handleStatusChange(donation._id, e.target.value)}
+                          className={`px-3 py-1 rounded-full text-xs font-medium border bg-[#0B0B15] cursor-pointer outline-none
+                            ${statusColors[donation.donationStatus] || "bg-gray-500/10 text-gray-400 border-gray-500/20"}`}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="inprogress">In Progress</option>
+                          <option value="done">Done</option>
+                          <option value="canceled">Canceled</option>
+                        </select>
+                      </td>
+
+                      <td className="p-4 text-right">
+                        <div className="dropdown dropdown-end  dropdown-left">
+                          <button tabIndex={0} className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-all">
+                            <FaEllipsisV size={14} />
+                          </button>
+                          <ul tabIndex={0} className="dropdown-content z-[50] menu p-2 shadow-xl shadow-black/50 bg-[#1A1A2E] border border-white/10 rounded-xl w-48 text-sm mt-2 translate-y-6">
+                            <li>
+                              <button 
+                                onClick={() => navigate(`/dashboard/donation-request-details/${donation._id}`)}
+                                className="text-gray-300 hover:text-white hover:bg-white/5 rounded-lg py-2"
+                              >
+                                <FaEye className="mr-2" /> View Details
+                              </button>
+                            </li>
+                            <li>
+                              <button 
+                                onClick={() => navigate(`/dashboard/donation-request-details-edit/${donation._id}`)}
+                                className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg py-2"
+                              >
+                                <FaEdit className="mr-2" /> Edit Request
+                              </button>
+                            </li>
+                            <div className="h-px bg-white/5 my-1"></div>
+                            <li>
+                              <button 
+                                onClick={() => handleDelete(donation._id)}
+                                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg py-2"
+                              >
+                                <FaTrash className="mr-2" /> Delete
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="p-8 text-center text-gray-500">
+                      No donation requests found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Pagination */}
+        <div className="flex flex-col md:flex-row items-center justify-between p-4 text-sm text-gray-400">
+          <div>
+            Showing{" "}
+            <span className="font-medium text-white">
+              {(currentPage - 1) * itemsPerPage + 1} -{" "}
+              {Math.min(currentPage * itemsPerPage, filteredDonations.length)}{" "}
+            </span>
+            of{" "}
+            <span className="font-medium text-white">{filteredDonations.length}</span>
+          </div>
+          <div className="flex gap-2 mt-2 md:mt-0">
             <button
-              key={i}
-              className={`px-3 py-1 border rounded ${page === i + 1 ? 'bg-gray-200 dark:bg-gray-700 font-bold' : ''}`}
-              onClick={() => setPage(i + 1)}
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+              className="px-3 py-1 rounded-md bg-purple-600 text-white font-semibold disabled:opacity-50"
             >
-              {i + 1}
+              First
             </button>
-          ))}
-          <button
-            className="px-3 py-1 border rounded disabled:opacity-50 dark:border-gray-600"
-            onClick={() => setPage(page + 1)}
-            disabled={page === totalPages}
-          >
-            Next
-          </button>
+            <button
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-1 rounded-md bg-purple-600 text-white font-semibold disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <button
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 rounded-md bg-purple-600 text-white font-semibold disabled:opacity-50"
+            >
+              Next
+            </button>
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 rounded-md bg-purple-600 text-white font-semibold disabled:opacity-50"
+            >
+              Last
+            </button>
+          </div>
         </div>
       </div>
     </div>
