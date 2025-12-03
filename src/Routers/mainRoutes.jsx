@@ -98,7 +98,7 @@ const mainRoutes = createBrowserRouter([
       },
       {
         path: '/funding',
-        element:  <PrivateRoute><FundingPage></FundingPage></PrivateRoute>
+        element: <FundingPage></FundingPage>
       },
             {
         path: "test",
@@ -112,7 +112,7 @@ const mainRoutes = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: <PrivateRoute><Dashboard /></PrivateRoute> ,
       },
       // {
       //   path: "all-users",

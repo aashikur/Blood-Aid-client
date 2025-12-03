@@ -20,7 +20,7 @@ export default function FundingPage() {
       <div className="mt-10">
         <FundingTable />
       </div> */}
-      <SupportBloodAid/>
+      <SupportBloodAid/> 
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { NavLink, useNavigate } from "react-router";
+import { Link, NavLink, useNavigate } from "react-router";
 import {
   FaHome, FaUser, FaUsers, FaRegListAlt, FaBlog, FaDonate, FaPlus, FaEdit, FaEnvelope,
   FaChevronLeft, FaChevronRight, FaHospital, FaAmbulance
@@ -59,7 +59,7 @@ export default function DashboardSidebar({ isOpen, toggleSidebar }) {
       >
         <span className={`text-lg relative z-10 ${!isOpen ? "text-xl" : ""}`}>{item.icon}</span>
         {isOpen && <span className="relative z-10 text-sm">{item.label}</span>}
-        
+
         {/* Hover Glow Effect */}
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-pink-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </NavLink>
@@ -83,15 +83,17 @@ export default function DashboardSidebar({ isOpen, toggleSidebar }) {
     >
       {/* Logo Area */}
       <div className="h-20 flex items-center justify-center border-b border-white/10 relative">
-        <div className="flex items-center gap-2">
-          <img src="/logo/icon-2.png" alt="Logo" className="w-8 h-8" />
-          {isOpen && (
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
-              BloodAid
-            </span>
-          )}
-        </div>
-        
+        <Link to="/" className="flex items-center gap-2 group">
+          <div className="flex items-center gap-2">
+            <img src="/logo/icon-2.png" alt="Logo" className="w-8 h-8" />
+            {isOpen && (
+              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                BloodAid
+              </span>
+            )}
+          </div>
+        </Link>
+
         <button
           onClick={toggleSidebar}
           className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#131320] border border-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:border-purple-500 transition-all md:flex hidden"
@@ -123,8 +125,8 @@ export default function DashboardSidebar({ isOpen, toggleSidebar }) {
           )}
           <nav className="flex flex-col">
             {renderLinks(
-              (role === "admin" || role === "volunteer") 
-                ? generalLinks.slice(1) 
+              (role === "admin" || role === "volunteer")
+                ? generalLinks.slice(1)
                 : generalLinks
             )}
           </nav>
@@ -142,7 +144,7 @@ export default function DashboardSidebar({ isOpen, toggleSidebar }) {
             />
             <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0B0B15] rounded-full"></div>
           </div>
-          
+
           {isOpen && (
             <div className="overflow-hidden">
               <h4 className="text-sm font-medium text-white truncate w-32">
