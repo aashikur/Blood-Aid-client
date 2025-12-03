@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { FaEdit, FaSave, FaTimes, FaUpload } from "react-icons/fa";
+import { FaEdit, FaSave, FaTimes, FaCamera, FaUser, FaEnvelope, FaTint, FaMapMarkerAlt } from "react-icons/fa";
 import { AuthContext } from "@/providers/AuthProvider";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import Swal from "sweetalert2";
@@ -53,7 +53,7 @@ const ProfileDashboard = () => {
   const handleFileChange = async (e) => {
     const imageFile = e.target.files[0];
     if (!imageFile) return;
-    const apiKey = "dff59569a81c30696775e74f040e20bb";
+    const apiKey = import.meta.env.VITE_IMGBB_API_KEY || "dff59569a81c30696775e74f040e20bb";
     const formData = new FormData();
     formData.append("image", imageFile);
 
@@ -66,12 +66,25 @@ const ProfileDashboard = () => {
       const data = await res.json();
       if (data.success) {
         setForm((prev) => ({ ...prev, avatar: data.data.url }));
-        Swal.fire("Uploaded!", "Image uploaded successfully.", "success");
+        Swal.fire({
+            title: "Uploaded!",
+            text: "Image uploaded successfully.",
+            icon: "success",
+            background: "#131320",
+            color: "#fff",
+            confirmButtonColor: "#9333ea"
+        });
       } else {
-        Swal.fire("Error", "Image upload failed!", "error");
+        throw new Error("Upload failed");
       }
     } catch (err) {
-      Swal.fire("Error", "Image upload failed!", "error");
+      Swal.fire({
+        title: "Error",
+        text: "Image upload failed!",
+        icon: "error",
+        background: "#131320",
+        color: "#fff"
+      });
     } finally {
       setLoading(false);
     }
@@ -116,154 +129,225 @@ const ProfileDashboard = () => {
         district: res.data?.district || "",
         upazila: res.data?.upazila || "",
       });
-      Swal.fire("Success!", "Profile updated successfully.", "success");
+      Swal.fire({
+        title: "Success!",
+        text: "Profile updated successfully.",
+        icon: "success",
+        background: "#131320",
+        color: "#fff",
+        confirmButtonColor: "#9333ea"
+      });
     } catch (err) {
-      Swal.fire("Error!", "Failed to update profile.", "error");
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to update profile.",
+        icon: "error",
+        background: "#131320",
+        color: "#fff"
+      });
     }
     setLoading(false);
   };
 
   const upazilaOptions = getUpazilasByDistrict(form.district);
 
-  if (!profile) return <Loading></Loading>;
+  if (!profile) return <Loading />;
+
+  // Styles
+  const inputClasses = `w-full bg-[#0B0B15] border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-gray-500 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all ${!edit ? 'opacity-60 cursor-not-allowed' : ''}`;
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-white dark:bg-[#18122B] rounded-2xl shadow p-4 mt-8">
-      <div className="flex flex-col items-center gap-6">
-        <img
-          src={form?.avatar || "/logo/icon-2.png"}
-          alt="Profile"
-          className="w-24 h-24 rounded-full border-4 border-[#c30027] object-cover"
-        />
+    <div className="max-w-6xl mx-auto pb-12">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-white">My Profile</h1>
+        <p className="text-gray-400 text-sm">Manage your personal information and account settings.</p>
+      </div>
 
-        <div className="w-full">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
-            <h2 className="text-2xl font-bold text-[#c30027]">My Profile</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Left Column: Profile Card */}
+        <div className="lg:col-span-1">
+          <div className="bg-[#131320]/80 border border-white/10 rounded-3xl p-8 backdrop-blur-xl shadow-xl flex flex-col items-center text-center relative overflow-hidden">
+            {/* Background Gradient */}
+            <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-purple-600/20 to-transparent -z-10"></div>
+
+            {/* Avatar */}
+            <div className="relative group mb-4">
+              <div className="w-32 h-32 rounded-full p-1 bg-gradient-to-br from-purple-500 to-pink-500">
+                <img
+                  src={form?.avatar || "/logo/icon-2.png"}
+                  alt="Profile"
+                  className="w-full h-full rounded-full object-cover border-4 border-[#131320]"
+                />
+              </div>
+              {edit && (
+                <label className="absolute bottom-0 right-0 p-2 bg-purple-600 rounded-full text-white cursor-pointer hover:bg-purple-700 transition-colors shadow-lg">
+                  <FaCamera size={14} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
+
+            <h2 className="text-xl font-bold text-white mb-1">{form.name || "User Name"}</h2>
+            <p className="text-gray-400 text-sm mb-6">{form.email}</p>
+
+            <div className="flex gap-2 mb-8">
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400 border border-purple-500/20 uppercase">
+                {role || "User"}
+              </span>
+              <span className={`px-3 py-1 rounded-full text-xs font-medium border uppercase ${status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
+                {status || "Active"}
+              </span>
+            </div>
+
             {!edit ? (
               <button
                 onClick={handleEdit}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#c30027] text-white font-semibold hover:bg-red-700 transition"
+                className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium transition-all flex items-center justify-center gap-2"
               >
-                <FaEdit /> Edit
+                <FaEdit /> Edit Profile
               </button>
             ) : (
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-3 w-full">
                 <button
                   onClick={handleSave}
                   disabled={loading}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-600 text-white font-semibold hover:bg-green-700 transition"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all flex items-center justify-center gap-2"
                 >
-                  <FaSave /> {loading ? "Saving..." : "Save"}
+                  {loading ? <span className="loading loading-spinner loading-xs"></span> : <FaSave />} Save Changes
                 </button>
                 <button
                   onClick={handleCancel}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-300 text-gray-700 font-semibold hover:bg-gray-400 transition"
+                  className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 font-medium transition-all flex items-center justify-center gap-2"
                 >
                   <FaTimes /> Cancel
                 </button>
               </div>
             )}
           </div>
+        </div>
 
-          <div className="mb-4">
-            <span className="inline-block px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-white">
-              Role: <strong>{role || "User"}</strong>
-            </span>
-            <span className="inline-block ml-3 px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-white">
-              Status: <strong>{status || "Active"}</strong>
-            </span>
+        {/* Right Column: Details Form */}
+        <div className="lg:col-span-2">
+          <div className="bg-[#131320]/80 border border-white/10 rounded-3xl p-8 backdrop-blur-xl shadow-xl h-full">
+            <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+              <span className="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full block"></span>
+              Personal Information
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Name */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-400 ml-1">Full Name</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                    <FaUser />
+                  </div>
+                  <input
+                    type="text"
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
+                    disabled={!edit}
+                    className={inputClasses}
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-400 ml-1">Email Address</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                    <FaEnvelope />
+                  </div>
+                  <input
+                    type="email"
+                    name="email"
+                    value={form.email}
+                    disabled
+                    className={`${inputClasses} opacity-50`}
+                  />
+                </div>
+              </div>
+
+              {/* Blood Group */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-400 ml-1">Blood Group</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                    <FaTint />
+                  </div>
+                  <select
+                    name="bloodGroup"
+                    value={form.bloodGroup}
+                    onChange={handleChange}
+                    disabled={!edit}
+                    className={inputClasses}
+                  >
+                    <option value="" className="bg-[#131320]">Select Group</option>
+                    {bloodGroups.map((bg) => (
+                      <option key={bg} value={bg} className="bg-[#131320]">{bg}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* District */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-400 ml-1">District</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                    <FaMapMarkerAlt />
+                  </div>
+                  <select
+                    name="district"
+                    value={form.district}
+                    onChange={handleChange}
+                    disabled={!edit}
+                    className={inputClasses}
+                  >
+                    <option value="" className="bg-[#131320]">Select District</option>
+                    {districts.map((d) => (
+                      <option key={d.id} value={d.name} className="bg-[#131320]">{d.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Upazila */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-gray-400 ml-1">Upazila</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500">
+                    <FaMapMarkerAlt />
+                  </div>
+                  <select
+                    name="upazila"
+                    value={form.upazila}
+                    onChange={handleChange}
+                    disabled={!edit}
+                    className={inputClasses}
+                  >
+                    <option value="" className="bg-[#131320]">Select Upazila</option>
+                    {upazilaOptions.map((u) => (
+                      <option key={u.id} value={u.name} className="bg-[#131320]">{u.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
-
-          <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold mb-1">Name</label>
-              <input
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                disabled={!edit}
-                className={`w-full px-3 py-2 rounded-lg ${edit ? "bg-[#FDEDF3] dark:bg-[#393053]" : "bg-gray-100 dark:bg-[#393053]"} outline-none`}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-1">Email</label>
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                disabled
-                className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-[#393053] outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-1">Upload Photo</label>
-              <label className="flex items-center gap-2 cursor-pointer px-4 py-2 rounded-md bg-[#c30027] text-white hover:bg-red-700">
-                <FaUpload /> Choose File
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  disabled={!edit}
-                  className="hidden"
-                />
-              </label>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-1">Blood Group</label>
-              <select
-                name="bloodGroup"
-                value={form.bloodGroup}
-                onChange={handleChange}
-                disabled={!edit}
-                className={`w-full px-3 py-2 rounded-lg ${edit ? "bg-[#FDEDF3] dark:bg-[#393053]" : "bg-gray-100 dark:bg-[#393053]"} outline-none`}
-              >
-                <option value="">Select</option>
-                {bloodGroups.map((bg) => (
-                  <option key={bg} value={bg}>{bg}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-1">District</label>
-              <select
-                name="district"
-                value={form.district}
-                onChange={handleChange}
-                disabled={!edit}
-                className={`w-full px-3 py-2 rounded-lg ${edit ? "bg-[#FDEDF3] dark:bg-[#393053]" : "bg-gray-100 dark:bg-[#393053]"} outline-none`}
-              >
-                <option value="">Select</option>
-                {districts.map((d) => (
-                  <option key={d.id} value={d.name}>{d.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-1">Upazila</label>
-              <select
-                name="upazila"
-                value={form.upazila}
-                onChange={handleChange}
-                disabled={!edit}
-                className={`w-full px-3 py-2 rounded-lg ${edit ? "bg-[#FDEDF3] dark:bg-[#393053]" : "bg-gray-100 dark:bg-[#393053]"} outline-none`}
-              >
-                <option value="">Select</option>
-                {upazilaOptions.map((u) => (
-                  <option key={u.id} value={u.name}>{u.name}</option>
-                ))}
-              </select>
-            </div>
-          </form>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default ProfileDashboard;

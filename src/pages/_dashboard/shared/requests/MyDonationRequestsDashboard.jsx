@@ -1,17 +1,12 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useMemo } from "react";
 import { AuthContext } from "@/providers/AuthProvider";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
-import Loading from "@/pages/_fronted/home/Loading";
-
-const statusColors = {
-  pending: "bg-yellow-100 text-yellow-700",
-  inprogress: "bg-blue-100 text-blue-700",
-  done: "bg-green-100 text-green-700",
-  canceled: "bg-red-100 text-red-700",
-};
+import { FaEye, FaEdit, FaTrash, FaEllipsisV, FaCheck, FaTimes } from "react-icons/fa";
+import FilterBar from "@/components/dashboard/shared/FilterBar";
+import Pagination from "@/components/dashboard/shared/Pagination";
 
 export default function MyDonationRequestsDashboard() {
   const queryClient = useQueryClient();
@@ -19,12 +14,13 @@ export default function MyDonationRequestsDashboard() {
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
-  // Pagination & Filter
-  const [page, setPage] = useState(1);
+  // --- State ---
+  const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const pageSize = 8;
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
-  // Fetch all requests for this user
+  // --- Data Fetching ---
   const { data: requests = [], isLoading } = useQuery({
     queryKey: ["my-donation-requests", user.email],
     queryFn: async () => {
@@ -33,205 +29,247 @@ export default function MyDonationRequestsDashboard() {
     },
   });
 
-  // Filter by status
-  const filteredRequests =
-    statusFilter === "all"
-      ? requests
-      : requests.filter((r) => r.donationStatus === statusFilter);
+  // --- Filtering Logic ---
+  const filteredRequests = useMemo(() => {
+    return requests.filter((req) => {
+        const term = searchTerm.toLowerCase();
+        const matchesSearch = 
+            req.recipientName?.toLowerCase().includes(term) ||
+            req.recipientDistrict?.toLowerCase().includes(term) ||
+            req.bloodGroup?.toLowerCase().includes(term);
 
-  // Pagination
-  const totalPages = Math.ceil(filteredRequests.length / pageSize);
+        const matchesStatus = statusFilter === "all" ? true : req.donationStatus === statusFilter;
+        
+        return matchesSearch && matchesStatus;
+    });
+  }, [requests, searchTerm, statusFilter]);
+
+  // --- Pagination Logic ---
   const paginatedRequests = filteredRequests.slice(
-    (page - 1) * pageSize,
-    page * pageSize
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
+  const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
 
-  // Delete request
+  // --- Handlers ---
   const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
       text: "Delete this request?",
       icon: "warning",
+      background: "#131320",
+      color: "#fff",
       showCancelButton: true,
-      confirmButtonColor: "#c30027",
-      cancelButtonColor: "#aaa",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
       confirmButtonText: "Yes, delete!",
     }).then((result) => {
       if (result.isConfirmed) {
         axiosSecure.delete(`/donation-request/${id}`).then(() => {
-          Swal.fire("Deleted!", "Request deleted.", "success");
+          Swal.fire({
+            title: "Deleted!",
+            text: "Request deleted.",
+            icon: "success",
+            background: "#131320",
+            color: "#fff",
+            confirmButtonColor: "#9333ea"
+          });
           queryClient.invalidateQueries(["my-donation-requests", user.email]);
         });
       }
     });
   };
 
-  // Status change (inprogress -> done/canceled)
   const handleStatusChange = (id, newStatus) => {
     Swal.fire({
-      title: "Are you sure?",
+      title: "Update Status?",
       text: `Mark this request as "${newStatus}"?`,
       icon: "question",
+      background: "#131320",
+      color: "#fff",
       showCancelButton: true,
-      confirmButtonColor: "#c30027",
-      cancelButtonColor: "#aaa",
+      confirmButtonColor: "#9333ea",
+      cancelButtonColor: "#d33",
       confirmButtonText: "Yes, update!",
     }).then((result) => {
       if (result.isConfirmed) {
         axiosSecure
           .patch(`/donation-request/${id}`, { donationStatus: newStatus })
           .then(() => {
-            Swal.fire("Success!", "Status updated.", "success");
+            Swal.fire({
+                title: "Success!",
+                text: "Status updated.",
+                icon: "success",
+                background: "#131320",
+                color: "#fff",
+                confirmButtonColor: "#9333ea"
+            });
             queryClient.invalidateQueries(["my-donation-requests", user.email]);
           });
       }
     });
   };
 
-  if (isLoading) return <Loading></Loading>
+  // --- Configuration ---
+  const filterOptions = [
+    {
+      value: statusFilter,
+      onChange: (e) => setStatusFilter(e.target.value),
+      options: [
+        { value: "all", label: "All Status" },
+        { value: "pending", label: "Pending" },
+        { value: "inprogress", label: "In Progress" },
+        { value: "done", label: "Done" },
+        { value: "canceled", label: "Canceled" },
+      ]
+    }
+  ];
+
+  const statusColors = {
+    pending: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
+    inprogress: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+    done: "bg-green-500/10 text-green-500 border-green-500/20",
+    canceled: "bg-red-500/10 text-red-500 border-red-500/20",
+  };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto ">
-  <h3 className="text-lg font-semibold mb-4 text-[#c30027] text-center">
-    My Donation Requests ({requests.length})
-  </h3>
-
-      {/* Filter */}
-      <div className="mb-4 flex flex-wrap gap-2 items-center justify-center">
-        <span className="font-semibold">Filter by status:</span>
-        {["all", "pending", "inprogress", "done", "canceled"].map((status) => (
-          <button
-            key={status}
-            className={`px-3 py-1 rounded-full ${
-              statusFilter === status
-                ? "bg-[#c30027] text-white"
-                : "bg-gray-200"
-            }`}
-            onClick={() => setStatusFilter(status)}
-          >
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-          </button>
-        ))}
-        
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-white">My Donation Requests</h1>
+        <p className="text-gray-400 text-sm">Manage your blood donation requests and track their status.</p>
       </div>
-      {/* Grid Layout */}
-<div className="bg-white dark:bg-[#18122B] rounded-2xl shadow-md border border-[#c30027]/10 p-4 overflow-x-auto">
 
-  {paginatedRequests.length > 0 ? (
-    <table className="min-w-full">
-      <thead>
-        <tr className="bg-[#FDEDF3] dark:bg-[#393053] text-[#c30027]">
-          <th className="p-3 text-left">Recipient</th>
-          <th className="p-3 text-left">Location</th>
-          <th className="p-3 text-left">Date</th>
-          <th className="p-3 text-left">Time</th>
-          <th className="p-3 text-left">Blood Group</th>
-          <th className="p-3 text-left">Status</th>
-          <th className="p-3 text-left">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {paginatedRequests.map((req) => (
-          <tr key={req._id} className="border-t">
-            <td className="p-3 font-semibold text-[#c30027]">{req.recipientName}</td>
-            <td className="p-3">{req.recipientDistrict}, {req.recipientUpazila}</td>
-            <td className="p-3">{req.donationDate}</td>
-            <td className="p-3">{req.donationTime}</td>
-            <td className="p-3 font-bold">{req.bloodGroup}</td>
-            <td className="p-3">
-              <span
-                className={`px-2 py-1 rounded-full text-xs font-bold ${
-                  statusColors[req.donationStatus] || "bg-gray-200"
-                }`}
-              >
-                {req.donationStatus}
-              </span>
-            </td>
-            <td className="p-3 flex flex-wrap gap-2">
-              <button
-                className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold hover:bg-blue-200 transition text-xs"
-                onClick={() => navigate(`/dashboard/donation-request-details-edit/${req._id}`)}
-              >
-                Edit
-              </button>
-              <button
-                className="px-3 py-1 rounded-full bg-red-100 text-red-700 font-semibold hover:bg-red-200 transition text-xs"
-                onClick={() => handleDelete(req._id)}
-              >
-                Delete
-              </button>
-              <button
-                className="px-3 py-1 rounded-full bg-green-100 text-green-700 font-semibold hover:bg-green-200 transition text-xs"
-                onClick={() => navigate(`/dashboard/donation-request-details/${req._id}`)}
-              >
-                View
-              </button>
+      {/* Filter Bar */}
+      <FilterBar 
+        searchTerm={searchTerm}
+        onSearch={(e) => setSearchTerm(e.target.value)}
+        filters={filterOptions}
+      />
 
-              {req.donationStatus === "inprogress" && (
-                <>
-                  <button
-                    className="px-3 py-1 rounded-full bg-green-600 text-white font-semibold hover:bg-green-700 transition text-xs"
-                    onClick={() => handleStatusChange(req._id, "done")}
-                  >
-                    Mark as Done
-                  </button>
-                  <button
-                    className="px-3 py-1 rounded-full bg-gray-300 text-gray-700 font-semibold hover:bg-gray-400 transition text-xs"
-                    onClick={() => handleStatusChange(req._id, "canceled")}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 font-semibold hover:bg-purple-200 transition text-xs"
-                    onClick={() => navigate(`/dashboard/donation-request-details/${req._id}`)}
-                  >
-                    Donor Info
-                  </button>
-                </>
-              )}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  ) : (
-    <div className="text-gray-500 mt-8 text-center">
-      No donation requests found.
-    </div>
-  )}
+      {/* Table Container */}
+      <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm">
+        {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+                <span className="loading loading-spinner loading-lg text-purple-500"></span>
+            </div>
+        ) : (
+            <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                    <thead>
+                        <tr className="bg-white/5 border-b border-white/10 text-xs uppercase tracking-wider text-gray-400">
+                            <th className="p-4 font-medium">Recipient Info</th>
+                            <th className="p-4 font-medium">Location</th>
+                            <th className="p-4 font-medium">Date & Time</th>
+                            <th className="p-4 font-medium">Blood Group</th>
+                            <th className="p-4 font-medium">Status</th>
+                            <th className="p-4 font-medium text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody className="text-sm">
+                        {paginatedRequests.length > 0 ? (
+                            paginatedRequests.map((req) => (
+                                <tr key={req._id} className="group border-b border-white/5 hover:bg-white/5 transition-colors">
+                                    <td className="p-4 font-medium text-white">
+                                        {req.recipientName}
+                                    </td>
+                                    <td className="p-4 text-gray-400">
+                                        {req.recipientDistrict}, {req.recipientUpazila}
+                                    </td>
+                                    <td className="p-4 text-gray-400">
+                                        <div>{req.donationDate}</div>
+                                        <div className="text-xs opacity-70">{req.donationTime}</div>
+                                    </td>
+                                    <td className="p-4">
+                                        <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-500/20 text-red-400 font-bold text-xs border border-red-500/30">
+                                            {req.bloodGroup}
+                                        </span>
+                                    </td>
+                                    <td className="p-4">
+                                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[req.donationStatus] || "bg-gray-500/10 text-gray-400 border-gray-500/20"}`}>
+                                            {req.donationStatus}
+                                        </span>
+                                    </td>
+                                    <td className="p-4 text-right">
+                                        <div className="dropdown dropdown-end dropdown-left">
+                                            <button tabIndex={0} className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-all">
+                                                <FaEllipsisV size={14} />
+                                            </button>
+                                            <ul tabIndex={0} className="dropdown-content z-[50] menu p-2 shadow-xl shadow-black/50 bg-[#1A1A2E] border border-white/10 rounded-xl w-48 text-sm mt-2">
+                                                <li>
+                                                    <button 
+                                                        onClick={() => navigate(`/dashboard/donation-request-details/${req._id}`)}
+                                                        className="text-gray-300 hover:text-white hover:bg-white/5 rounded-lg py-2"
+                                                    >
+                                                        <FaEye className="mr-2" /> View Details
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button 
+                                                        onClick={() => navigate(`/dashboard/donation-request-details-edit/${req._id}`)}
+                                                        className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg py-2"
+                                                    >
+                                                        <FaEdit className="mr-2" /> Edit
+                                                    </button>
+                                                </li>
+                                                
+                                                {req.donationStatus === "inprogress" && (
+                                                    <>
+                                                        <div className="h-px bg-white/5 my-1"></div>
+                                                        <li>
+                                                            <button 
+                                                                onClick={() => handleStatusChange(req._id, "done")}
+                                                                className="text-green-400 hover:text-green-300 hover:bg-green-500/10 rounded-lg py-2"
+                                                            >
+                                                                <FaCheck className="mr-2" /> Mark Done
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button 
+                                                                onClick={() => handleStatusChange(req._id, "canceled")}
+                                                                className="text-yellow-400 hover:text-yellow-300 hover:bg-yellow-500/10 rounded-lg py-2"
+                                                            >
+                                                                <FaTimes className="mr-2" /> Cancel
+                                                            </button>
+                                                        </li>
+                                                    </>
+                                                )}
 
-  {/* Pagination */}
-  {totalPages > 1 && (
-    <div className="flex justify-center mt-6 gap-2">
-      {Array.from({ length: totalPages }, (_, idx) => (
-        <button
-          key={idx}
-          className={`px-3 py-1 rounded-full font-semibold ${
-            page === idx + 1 ? "bg-[#c30027] text-white" : "bg-gray-200"
-          }`}
-          onClick={() => setPage(idx + 1)}
-        >
-          {idx + 1}
-        </button>
-      ))}
-    </div>
-  )}
-</div>
+                                                <div className="h-px bg-white/5 my-1"></div>
+                                                <li>
+                                                    <button 
+                                                        onClick={() => handleDelete(req._id)}
+                                                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg py-2"
+                                                    >
+                                                        <FaTrash className="mr-2" /> Delete
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="6" className="p-8 text-center text-gray-500">
+                                    No donation requests found.
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+        )}
+      </div>
 
       {/* Pagination */}
-      {/* <div className="flex justify-center mt-6 gap-2 ">
-        {Array.from({ length: totalPages }, (_, idx) => (
-          <button
-            key={idx}
-            className={`px-3 py-1 rounded-full font-semibold ${
-              page === idx + 1 ? "bg-[#c30027] text-white" : "bg-gray-200"
-            }`}
-            onClick={() => setPage(idx + 1)}
-          >
-            {idx + 1}
-          </button>
-        ))}
-      </div> */}
+      <div className="flex justify-center mt-4">
+        <Pagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      </div>
     </div>
   );
 }
