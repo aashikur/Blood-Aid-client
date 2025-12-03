@@ -21,7 +21,7 @@ export default function MyDonationRequestsDetails() {
   if (!request) return <div className="text-center py-10 text-gray-400">No data found.</div>;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="mx-auto">
       <DonationRequestForm 
         initialData={request} 
         mode="view" 

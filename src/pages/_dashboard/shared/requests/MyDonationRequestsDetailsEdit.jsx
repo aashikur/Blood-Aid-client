@@ -69,7 +69,7 @@ const EditDonationRequest = () => {
   if (isError || !request) return <div className="text-red-500 text-center py-10">Error loading data.</div>;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="mx-auto">
       <DonationRequestForm 
         initialData={request} 
         mode="edit" 
